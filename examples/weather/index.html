@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Aether Weather - Snap-In Demo</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Aether Kernel -->
+  <script src="../../dist/aether-kernel.min.js"></script>
+  <script type="module" src="../../src/adapter/web-component.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: #f8fafc;
+    }
+    h1 { color: #0f172a; margin-bottom: 0.5rem; }
+    .subtitle { color: #64748b; margin-bottom: 2rem; }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .panel {
+      border-radius: 12px;
+      padding: 1.5rem;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .legacy-app {
+      border: 2px solid #e2e8f0;
+    }
+    .legacy-app h2 { color: #475569; }
+
+    .aether-panel {
+      border: 2px solid #0ea5e9;
+    }
+    .aether-panel h3 {
+      color: #0ea5e9;
+      margin-top: 0;
+    }
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .metric:last-child { border-bottom: none; }
+    .metric-label { color: #64748b; }
+    .metric-value { font-weight: 600; color: #0f172a; }
+
+    button {
+      background: #0ea5e9;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 1rem;
+      transition: background 0.2s;
+    }
+    button:hover { background: #0284c7; }
+
+    /* Aether slot styling */
+    [data-aether-slot] {
+      transition: all var(--tempo, 0.3s);
+    }
+
+    .alert-card {
+      padding: 1rem;
+      border-radius: 8px;
+      background: var(--background-subtle, #fef2f2);
+      border-left: 4px solid var(--accent-color, #dc2626);
+      margin-top: 1rem;
+    }
+    .alert-card h4 {
+      margin: 0 0 0.5rem 0;
+      color: var(--accent-color, #dc2626);
+    }
+
+    .timing {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #f1f5f9;
+      border-radius: 8px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <h1>Snap-In Mode: React + Aether Coexistence</h1>
+  <p class="subtitle">React manages the main app while Aether handles real-time alerts</p>
+
+  <div class="container">
+    <!-- Legacy React App -->
+    <div class="panel legacy-app">
+      <div id="react-root"></div>
+    </div>
+
+    <!-- Aether snaps in beside it -->
+    <div class="panel aether-panel">
+      <h3>Live Alert (Aether)</h3>
+      <p>Real-time SSE projection, no React needed.</p>
+
+      <aether-runtime
+        endpoint="/api/sse"
+        namespace="weather-alert"
+        mood="urgent">
+        <div class="alert-card">
+          <h4 data-aether-slot="alert-title">Loading...</h4>
+          <p data-aether-slot="alert-body">Connecting to stream...</p>
+          <small data-aether-slot="alert-time"></small>
+        </div>
+      </aether-runtime>
+
+      <div id="secondary-snap-in"></div>
+    </div>
+  </div>
+
+  <div class="timing" id="timing-output">
+    Timing metrics will appear here...
+  </div>
+
+  <script type="text/babel">
+    // Legacy React component (unchanged from existing codebase)
+    function WeatherApp() {
+      const [data, setData] = React.useState({
+        temp: 72,
+        condition: 'Sunny',
+        humidity: 45,
+        wind: 8
+      });
+      const [renderTime, setRenderTime] = React.useState(null);
+
+      React.useEffect(() => {
+        const start = performance.now();
+        // Simulate React rendering work
+        requestAnimationFrame(() => {
+          setRenderTime((performance.now() - start).toFixed(2));
+        });
+      }, [data]);
+
+      return (
+        <div>
+          <h2>Legacy Weather (React)</h2>
+          <div className="metric">
+            <span className="metric-label">Temperature</span>
+            <span className="metric-value">{data.temp}°F</span>
+          </div>
+          <div className="metric">
+            <span className="metric-label">Condition</span>
+            <span className="metric-value">{data.condition}</span>
+          </div>
+          <div className="metric">
+            <span className="metric-label">Humidity</span>
+            <span className="metric-value">{data.humidity}%</span>
+          </div>
+          <div className="metric">
+            <span className="metric-label">Wind</span>
+            <span className="metric-value">{data.wind} mph</span>
+          </div>
+          <button onClick={() => setData({
+            ...data,
+            temp: data.temp + Math.floor(Math.random() * 5) - 2
+          })}>
+            Update Weather
+          </button>
+          {renderTime && (
+            <p style={{fontSize: '0.8rem', color: '#64748b', marginTop: '1rem'}}>
+              React render: {renderTime}ms
+            </p>
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('react-root'));
+    root.render(<WeatherApp />);
+  </script>
+
+  <!-- Aether Adapter Demo -->
+  <script type="module">
+    import { AetherAdapter } from '../../src/adapter/aether-adapter.js';
+
+    // Demonstrate programmatic snap-in after 5 seconds
+    const adapter = new AetherAdapter();
+
+    setTimeout(() => {
+      const start = performance.now();
+
+      adapter.snapIn('#secondary-snap-in', {
+        endpoint: '/api/sse',
+        namespace: 'secondary-alert',
+        mood: 'info'
+      });
+
+      const elapsed = (performance.now() - start).toFixed(2);
+      document.getElementById('timing-output').innerHTML = `
+        <strong>Timing Metrics:</strong><br>
+        Aether snap-in mount: ${elapsed}ms<br>
+        Kernel size: 819 bytes (gzipped)<br>
+        Target latency: &lt;50ms
+      `;
+    }, 5000);
+  </script>
+</body>
+</html>

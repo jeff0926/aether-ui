@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Aether Chat - Streaming Text</title>
+  <script src="../../dist/aether-kernel.min.js"></script>
+  <script type="module" src="../../src/adapter/web-component.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      background: #0f172a;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .chat-header h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .chat-header .badge {
+      background: #22c55e;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .chat-container {
+      flex: 1;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem;
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 1rem;
+    }
+
+    .message {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .message.user .message-avatar {
+      background: #0ea5e9;
+      color: white;
+    }
+    .message.assistant .message-avatar {
+      background: #8b5cf6;
+      color: white;
+    }
+
+    .message-content {
+      flex: 1;
+    }
+    .message-sender {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+    .message.user .message-sender { color: #0ea5e9; }
+    .message.assistant .message-sender { color: #8b5cf6; }
+
+    .message-text {
+      background: white;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      line-height: 1.6;
+    }
+    .message.user .message-text {
+      background: #0ea5e9;
+      color: white;
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: flex;
+      gap: 0.25rem;
+      padding: 0.5rem;
+    }
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: #94a3b8;
+      border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
+
+    /* Input area */
+    .input-area {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+    .input-area input {
+      flex: 1;
+      padding: 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-area input:focus {
+      border-color: #0ea5e9;
+    }
+    .input-area button {
+      background: #0ea5e9;
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .input-area button:hover {
+      background: #0284c7;
+    }
+
+    /* Aether streaming message */
+    .stream-container {
+      min-height: 60px;
+    }
+    .stream-text {
+      white-space: pre-wrap;
+    }
+    .stream-text::after {
+      content: '▊';
+      animation: blink 1s infinite;
+      color: #8b5cf6;
+    }
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    /* Status bar */
+    .status-bar {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      padding: 1rem;
+      background: #f1f5f9;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+    .status-dot.error { background: #dc2626; }
+    .status-dot.connecting { background: #f59e0b; animation: pulse 2s infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <header class="chat-header">
+    <h1>Aether Chat</h1>
+    <span class="badge">SSE Streaming</span>
+    <span class="badge" style="background: #8b5cf6;">No React</span>
+  </header>
+
+  <div class="chat-container">
+    <aether-runtime
+      endpoint="/api/sse"
+      namespace="streaming-chat"
+      id="chat-runtime">
+
+      <div class="messages" id="messages">
+        <!-- Static welcome message -->
+        <div class="message assistant">
+          <div class="message-avatar">A</div>
+          <div class="message-content">
+            <div class="message-sender">Aether Assistant</div>
+            <div class="message-text">
+              Welcome to Aether Chat! This is a zero-hydration chat interface.
+              Messages stream via Server-Sent Events directly to the DOM.
+              No React, no virtual DOM, no reconciliation. Just 2KB of kernel magic.
+            </div>
+          </div>
+        </div>
+
+        <!-- Streaming message from Aether -->
+        <div class="message assistant" id="streaming-message">
+          <div class="message-avatar">A</div>
+          <div class="message-content">
+            <div class="message-sender">Aether Assistant</div>
+            <div class="message-text stream-container">
+              <span class="stream-text" data-aether-slot="current-message"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-area">
+        <input
+          type="text"
+          id="user-input"
+          placeholder="Type a message..."
+          data-aether-slot="input-placeholder"
+        />
+        <button id="send-btn">Send</button>
+      </div>
+
+    </aether-runtime>
+  </div>
+
+  <footer class="status-bar">
+    <div class="status-item">
+      <span class="status-dot" id="connection-status"></span>
+      <span data-aether-slot="chat-status">Connecting...</span>
+    </div>
+    <div class="status-item">
+      <span>Kernel: 819 bytes</span>
+    </div>
+    <div class="status-item">
+      <span>Latency: &lt;50ms</span>
+    </div>
+  </footer>
+
+  <script>
+    const messagesContainer = document.getElementById('messages');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const streamingMessage = document.getElementById('streaming-message');
+
+    // Add user message
+    function addUserMessage(text) {
+      const messageEl = document.createElement('div');
+      messageEl.className = 'message user';
+      messageEl.innerHTML = `
+        <div class="message-avatar">U</div>
+        <div class="message-content">
+          <div class="message-sender">You</div>
+          <div class="message-text">${text}</div>
+        </div>
+      `;
+
+      // Insert before streaming message
+      messagesContainer.insertBefore(messageEl, streamingMessage);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    sendBtn.addEventListener('click', () => {
+      const text = userInput.value.trim();
+      if (text) {
+        addUserMessage(text);
+        userInput.value = '';
+      }
+    });
+
+    userInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendBtn.click();
+      }
+    });
+
+    // Update connection status based on Aether state
+    const runtime = document.getElementById('chat-runtime');
+    const statusDot = document.getElementById('connection-status');
+
+    const observer = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type === 'attributes') {
+          if (runtime.hasAttribute('data-aether-connected')) {
+            statusDot.className = 'status-dot';
+          } else if (runtime.hasAttribute('data-aether-error')) {
+            statusDot.className = 'status-dot error';
+          } else {
+            statusDot.className = 'status-dot connecting';
+          }
+        }
+      }
+    });
+    observer.observe(runtime, { attributes: true });
+
+    // Auto-scroll on new content
+    const contentObserver = new MutationObserver(() => {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    });
+    contentObserver.observe(messagesContainer, { childList: true, subtree: true, characterData: true });
+  </script>
+</body>
+</html>

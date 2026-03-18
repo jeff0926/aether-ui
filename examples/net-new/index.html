@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Aether Net-New: Pure Aether App</title>
+  <!-- No React. No Vue. No Angular. Just Aether. -->
+  <script src="../../dist/aether-kernel.min.js"></script>
+  <script type="module" src="../../src/adapter/web-component.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+    }
+
+    header {
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    header p {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+    }
+
+    main {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 3rem 0;
+    }
+    .hero h2 {
+      font-size: 2.5rem;
+      background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      color: #94a3b8;
+      font-size: 1.1rem;
+      margin-top: 1rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #22c55e;
+    }
+    .stat-label {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-top: 0.25rem;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .panel {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all var(--tempo, 0.3s);
+    }
+    .panel:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateY(-2px);
+    }
+    .panel h3 {
+      font-size: 1rem;
+      color: #94a3b8;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .metric-large {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--accent-color, #0ea5e9);
+      transition: color var(--tempo, 0.3s);
+    }
+    .metric-unit {
+      font-size: 1rem;
+      color: #64748b;
+      margin-left: 0.25rem;
+    }
+    .metric-change {
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+    .metric-change.up { color: #22c55e; }
+    .metric-change.down { color: #dc2626; }
+
+    .activity-list {
+      list-style: none;
+    }
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-color, #0ea5e9);
+    }
+    .activity-text {
+      flex: 1;
+      font-size: 0.9rem;
+    }
+    .activity-time {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #475569;
+      font-size: 0.85rem;
+    }
+    footer a {
+      color: #0ea5e9;
+      text-decoration: none;
+    }
+
+    /* Aether connection status */
+    [data-aether-connected] .status-indicator { background: #22c55e; }
+    [data-aether-error] .status-indicator { background: #dc2626; }
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #f59e0b;
+      display: inline-block;
+      margin-right: 0.5rem;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Pure Aether Dashboard</h1>
+    <p><span class="status-indicator"></span>No React. No Vue. No Angular. 2KB kernel. Edge-native SSE.</p>
+  </header>
+
+  <main>
+    <aether-runtime
+      id="main-app"
+      endpoint="/api/sse"
+      namespace="pure-aether"
+      mood="neutral">
+
+      <div class="hero">
+        <h2>Zero-Hydration UI</h2>
+        <p>
+          This entire dashboard is powered by a 2KB kernel receiving
+          Server-Sent Events. No JavaScript framework, no virtual DOM,
+          no hydration overhead.
+        </p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-value">2KB</div>
+          <div class="stat-label">Kernel Size (gzipped)</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">&lt;50ms</div>
+          <div class="stat-label">Intent-to-Pixel Latency</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Framework Dependencies</div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="panel">
+          <h3>CPU Usage</h3>
+          <div class="metric-large" data-aether-slot="cpu">--</div>
+          <div class="metric-change up">Live from SSE stream</div>
+        </div>
+
+        <div class="panel">
+          <h3>Memory</h3>
+          <div class="metric-large">
+            <span data-aether-slot="memory">--</span>
+            <span class="metric-unit">GB</span>
+          </div>
+          <div class="metric-change up">Real-time projection</div>
+        </div>
+
+        <div class="panel">
+          <h3>Requests/sec</h3>
+          <div class="metric-large" data-aether-slot="requests">--</div>
+          <div class="metric-change up">No reconciliation</div>
+        </div>
+
+        <div class="panel">
+          <h3>Recent Activity</h3>
+          <ul class="activity-list">
+            <li class="activity-item">
+              <span class="activity-dot"></span>
+              <span class="activity-text">SSE connection established</span>
+              <span class="activity-time">now</span>
+            </li>
+            <li class="activity-item">
+              <span class="activity-dot"></span>
+              <span class="activity-text">CSS variables injected</span>
+              <span class="activity-time">+10ms</span>
+            </li>
+            <li class="activity-item">
+              <span class="activity-dot"></span>
+              <span class="activity-text">Slots hydrated via textContent</span>
+              <span class="activity-time">+15ms</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </aether-runtime>
+  </main>
+
+  <footer>
+    <p>
+      Aether UI v0.2.0 |
+      <a href="../../docs/ARCHITECTURE.md">Architecture</a> |
+      <a href="https://github.com/aether-ui/aether-ui">GitHub</a>
+    </p>
+  </footer>
+
+  <script type="module">
+    import { AetherAdapter } from '../../src/adapter/aether-adapter.js';
+
+    // Net-new: Aether checks edge eligibility on load
+    const adapter = new AetherAdapter();
+
+    adapter.netNew(window.location.pathname, '/api')
+      .then(eligible => {
+        console.log('Net-new eligible:', eligible);
+        // If eligible, edge config would be applied
+        // In production, this would bypass React bundle entirely
+      });
+
+    // Performance logging
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        console.log(`[Aether] ${entry.name}: ${entry.duration.toFixed(2)}ms`);
+      }
+    });
+    observer.observe({ entryTypes: ['measure'] });
+
+    // Mark when first content appears
+    const mainApp = document.getElementById('main-app');
+    const slotObserver = new MutationObserver((mutations, obs) => {
+      for (const m of mutations) {
+        if (m.target.dataset?.aetherSlot && m.target.textContent !== '--') {
+          performance.mark('aether-first-content');
+          performance.measure('First Content', 'navigationStart', 'aether-first-content');
+          obs.disconnect();
+          break;
+        }
+      }
+    });
+    slotObserver.observe(mainApp, { subtree: true, characterData: true, childList: true });
+  </script>
+</body>
+</html>

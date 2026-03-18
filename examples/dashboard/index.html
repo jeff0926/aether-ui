@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Aether Dashboard - Multi-Agent Consensus</title>
+  <script src="../../dist/aether-kernel.min.js"></script>
+  <script type="module" src="../../src/adapter/web-component.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+    }
+
+    .app-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: #1e293b;
+      border-right: 1px solid #334155;
+      padding: 1.5rem;
+    }
+    .sidebar h1 {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+      color: #0ea5e9;
+    }
+    .nav-tabs {
+      list-style: none;
+    }
+    .nav-tab {
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .nav-tab:hover { background: #334155; }
+    .nav-tab.active {
+      background: #0ea5e9;
+      color: white;
+    }
+    .nav-tab .icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      background: currentColor;
+      opacity: 0.7;
+    }
+
+    /* Main content */
+    .main-content {
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* Agent cards */
+    .agents-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .agent-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all var(--tempo, 0.3s);
+    }
+    .agent-card:hover {
+      border-color: var(--agent-color, #0ea5e9);
+    }
+
+    .agent-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .agent-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--agent-color, #0ea5e9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .agent-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    .agent-role {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .agent-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #334155;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--status-color, #22c55e);
+      animation: pulse 2s infinite;
+    }
+    .status-text {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    /* Confidence meter */
+    .confidence-meter {
+      margin-top: 1rem;
+    }
+    .confidence-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-bottom: 0.5rem;
+    }
+    .confidence-bar {
+      height: 6px;
+      background: #334155;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .confidence-fill {
+      height: 100%;
+      background: var(--agent-color, #0ea5e9);
+      transition: width var(--tempo, 0.3s);
+    }
+
+    /* Consensus panel */
+    .consensus-panel {
+      background: #1e293b;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+    .consensus-panel h3 {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+    .consensus-result {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--consensus-color, #22c55e);
+    }
+    .consensus-detail {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #64748b;
+    }
+
+    /* Timeline */
+    .timeline {
+      margin-top: 2rem;
+    }
+    .timeline-item {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-left: 2px solid #334155;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -5px;
+      top: 1.25rem;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--agent-color, #0ea5e9);
+    }
+    .timeline-time {
+      font-size: 0.8rem;
+      color: #64748b;
+      min-width: 60px;
+    }
+    .timeline-content {
+      flex: 1;
+    }
+    .timeline-agent {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .timeline-message {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-top: 0.25rem;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <h1>Aether Agents</h1>
+      <ul class="nav-tabs">
+        <li class="nav-tab active" data-tab="agents">
+          <span class="icon"></span>
+          Agents
+        </li>
+        <li class="nav-tab" data-tab="consensus">
+          <span class="icon"></span>
+          Consensus
+        </li>
+        <li class="nav-tab" data-tab="timeline">
+          <span class="icon"></span>
+          Timeline
+        </li>
+      </ul>
+    </aside>
+
+    <main class="main-content">
+      <aether-runtime
+        endpoint="/api/sse"
+        namespace="multi-agent"
+        id="dashboard-runtime">
+
+        <!-- Agents Tab -->
+        <div class="tab-panel active" id="tab-agents">
+          <h2>Multi-Agent Dashboard</h2>
+          <p style="color: #64748b; margin-top: 0.5rem;">
+            Three agents collaborate via single SSE connection. Tab switching preserves connection state.
+          </p>
+
+          <div class="agents-grid">
+            <!-- Planner Agent -->
+            <div class="agent-card" style="--agent-color: #8b5cf6;">
+              <div class="agent-header">
+                <div class="agent-avatar">P</div>
+                <div>
+                  <div class="agent-name">Planner</div>
+                  <div class="agent-role">Strategic Planning</div>
+                </div>
+              </div>
+              <p style="font-size: 0.9rem; color: #94a3b8;" data-aether-slot="planner-thought">
+                Analyzing objectives...
+              </p>
+              <div class="confidence-meter">
+                <div class="confidence-label">
+                  <span>Confidence</span>
+                  <span data-aether-slot="planner-confidence">--</span>
+                </div>
+                <div class="confidence-bar">
+                  <div class="confidence-fill" style="width: 75%;"></div>
+                </div>
+              </div>
+              <div class="agent-status">
+                <span class="status-dot" style="--status-color: #8b5cf6;"></span>
+                <span class="status-text" data-aether-slot="planner-status">Active</span>
+              </div>
+            </div>
+
+            <!-- Executor Agent -->
+            <div class="agent-card" style="--agent-color: #0ea5e9;">
+              <div class="agent-header">
+                <div class="agent-avatar">E</div>
+                <div>
+                  <div class="agent-name">Executor</div>
+                  <div class="agent-role">Task Execution</div>
+                </div>
+              </div>
+              <p style="font-size: 0.9rem; color: #94a3b8;" data-aether-slot="executor-thought">
+                Awaiting instructions...
+              </p>
+              <div class="confidence-meter">
+                <div class="confidence-label">
+                  <span>Confidence</span>
+                  <span data-aether-slot="executor-confidence">--</span>
+                </div>
+                <div class="confidence-bar">
+                  <div class="confidence-fill" style="width: 60%;"></div>
+                </div>
+              </div>
+              <div class="agent-status">
+                <span class="status-dot" style="--status-color: #0ea5e9;"></span>
+                <span class="status-text" data-aether-slot="executor-status">Ready</span>
+              </div>
+            </div>
+
+            <!-- Critic Agent -->
+            <div class="agent-card" style="--agent-color: #f59e0b;">
+              <div class="agent-header">
+                <div class="agent-avatar">C</div>
+                <div>
+                  <div class="agent-name">Critic</div>
+                  <div class="agent-role">Quality Assurance</div>
+                </div>
+              </div>
+              <p style="font-size: 0.9rem; color: #94a3b8;" data-aether-slot="critic-thought">
+                Monitoring outputs...
+              </p>
+              <div class="confidence-meter">
+                <div class="confidence-label">
+                  <span>Confidence</span>
+                  <span data-aether-slot="critic-confidence">--</span>
+                </div>
+                <div class="confidence-bar">
+                  <div class="confidence-fill" style="width: 82%;"></div>
+                </div>
+              </div>
+              <div class="agent-status">
+                <span class="status-dot" style="--status-color: #f59e0b;"></span>
+                <span class="status-text" data-aether-slot="critic-status">Observing</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Consensus Tab -->
+        <div class="tab-panel" id="tab-consensus">
+          <h2>Consensus View</h2>
+          <p style="color: #64748b; margin-top: 0.5rem;">
+            Real-time visualization of agent agreement and decision making.
+          </p>
+
+          <div class="consensus-panel" style="--consensus-color: #22c55e;">
+            <h3>Current Consensus</h3>
+            <div class="consensus-result" data-aether-slot="consensus-decision">
+              Awaiting agent agreement...
+            </div>
+            <div class="consensus-detail" data-aether-slot="consensus-detail">
+              Agents are deliberating on the optimal approach.
+            </div>
+          </div>
+
+          <div class="agents-grid" style="margin-top: 2rem;">
+            <div class="agent-card" style="--agent-color: #8b5cf6;">
+              <div class="agent-name">Planner Vote</div>
+              <div style="font-size: 1.5rem; margin-top: 0.5rem;" data-aether-slot="planner-vote">--</div>
+            </div>
+            <div class="agent-card" style="--agent-color: #0ea5e9;">
+              <div class="agent-name">Executor Vote</div>
+              <div style="font-size: 1.5rem; margin-top: 0.5rem;" data-aether-slot="executor-vote">--</div>
+            </div>
+            <div class="agent-card" style="--agent-color: #f59e0b;">
+              <div class="agent-name">Critic Vote</div>
+              <div style="font-size: 1.5rem; margin-top: 0.5rem;" data-aether-slot="critic-vote">--</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Tab -->
+        <div class="tab-panel" id="tab-timeline">
+          <h2>Activity Timeline</h2>
+          <p style="color: #64748b; margin-top: 0.5rem;">
+            Chronological view of agent interactions and decisions.
+          </p>
+
+          <div class="timeline" id="timeline-container">
+            <div class="timeline-item" style="--agent-color: #8b5cf6;">
+              <span class="timeline-time">00:00</span>
+              <div class="timeline-content">
+                <div class="timeline-agent">Planner</div>
+                <div class="timeline-message" data-aether-slot="timeline-0">Initializing...</div>
+              </div>
+            </div>
+            <div class="timeline-item" style="--agent-color: #0ea5e9;">
+              <span class="timeline-time">00:01</span>
+              <div class="timeline-content">
+                <div class="timeline-agent">Executor</div>
+                <div class="timeline-message" data-aether-slot="timeline-1">Ready for tasks...</div>
+              </div>
+            </div>
+            <div class="timeline-item" style="--agent-color: #f59e0b;">
+              <span class="timeline-time">00:02</span>
+              <div class="timeline-content">
+                <div class="timeline-agent">Critic</div>
+                <div class="timeline-message" data-aether-slot="timeline-2">Monitoring initiated...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </aether-runtime>
+    </main>
+  </div>
+
+  <script>
+    // Tab switching without SSE reconnection
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Update active tab
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        // Update active panel
+        const tabId = tab.dataset.tab;
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById(`tab-${tabId}`).classList.add('active');
+
+        // SSE connection persists - no reconnection needed
+        console.log(`[Aether] Tab switched to ${tabId}, SSE connection preserved`);
+      });
+    });
+  </script>
+</body>
+</html>

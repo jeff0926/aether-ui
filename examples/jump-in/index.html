@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Aether Jump-In: React Replacement</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script src="../../dist/aether-kernel.min.js"></script>
+  <script type="module" src="../../src/adapter/web-component.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: #0f172a;
+      color: #f8fafc;
+    }
+    h1 { margin-bottom: 0.5rem; }
+    .subtitle { color: #94a3b8; margin-bottom: 2rem; }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    button {
+      background: #22c55e;
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    button:hover { background: #16a34a; transform: scale(1.02); }
+    button.danger {
+      background: #dc2626;
+    }
+    button.danger:hover { background: #b91c1c; }
+
+    #app-root {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 2rem;
+      min-height: 400px;
+      transition: all 0.3s;
+    }
+
+    .slow-react {
+      opacity: 0.9;
+    }
+    .slow-react .item {
+      padding: 0.5rem;
+      border-bottom: 1px solid #334155;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    /* Aether fast dashboard styles */
+    .fast-aether {
+      border: 3px solid #22c55e;
+    }
+    .fast-aether h2 {
+      color: #22c55e;
+      margin-top: 0;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .metric-card {
+      background: #334155;
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: center;
+      border-left: 4px solid var(--accent-color, #0ea5e9);
+      transition: all var(--tempo, 0.3s);
+    }
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent-color, #0ea5e9);
+    }
+    .metric-label {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      margin-top: 0.5rem;
+    }
+
+    .timing-bar {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #334155;
+      border-radius: 8px;
+    }
+    .timing-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #475569;
+    }
+    .timing-item:last-child { border-bottom: none; }
+    .timing-label { color: #94a3b8; }
+    .timing-value { font-family: monospace; font-weight: 600; }
+    .timing-value.fast { color: #22c55e; }
+    .timing-value.slow { color: #f59e0b; }
+  </style>
+</head>
+<body>
+  <h1>Jump-In Mode: Aether Replaces React</h1>
+  <p class="subtitle">Click the button to destroy React and let Aether take over instantly</p>
+
+  <div class="controls">
+    <button id="jump-btn">Jump to Aether</button>
+    <button id="reset-btn" class="danger">Reset to React</button>
+  </div>
+
+  <div id="app-root">
+    <!-- React mounts here initially, Aether claims it on jump -->
+  </div>
+
+  <div class="timing-bar" id="timing-bar">
+    <div class="timing-item">
+      <span class="timing-label">React initial render:</span>
+      <span class="timing-value slow" id="react-time">measuring...</span>
+    </div>
+    <div class="timing-item">
+      <span class="timing-label">Aether jump-in mount:</span>
+      <span class="timing-value fast" id="aether-time">--</span>
+    </div>
+    <div class="timing-item">
+      <span class="timing-label">First SSE frame:</span>
+      <span class="timing-value fast" id="sse-time">--</span>
+    </div>
+  </div>
+
+  <script type="text/babel">
+    function SlowDashboard() {
+      const [items] = React.useState(Array(100).fill(0).map((_, i) => ({
+        id: i,
+        value: Math.random().toFixed(6)
+      })));
+
+      React.useEffect(() => {
+        const start = window.__REACT_RENDER_START__;
+        const elapsed = (performance.now() - start).toFixed(2);
+        document.getElementById('react-time').textContent = elapsed + 'ms';
+      }, []);
+
+      return (
+        <div className="slow-react">
+          <h2>React Dashboard (100 items)</h2>
+          <p style={{color: '#94a3b8'}}>
+            This React component renders 100 items on every update.
+            Heavy reconciliation, virtual DOM diffing, and hydration overhead.
+          </p>
+          <div style={{maxHeight: '250px', overflow: 'auto', marginTop: '1rem'}}>
+            {items.map(item => (
+              <div key={item.id} className="item">
+                Item {item.id}: {item.value}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function renderReact() {
+      window.__REACT_RENDER_START__ = performance.now();
+      const root = ReactDOM.createRoot(document.getElementById('app-root'));
+      root.render(<SlowDashboard />);
+      window.__REACT_ROOT__ = root;
+    }
+
+    renderReact();
+  </script>
+
+  <script type="module">
+    import { AetherAdapter } from '../../src/adapter/aether-adapter.js';
+
+    const adapter = new AetherAdapter();
+
+    document.getElementById('jump-btn').addEventListener('click', () => {
+      const start = performance.now();
+
+      // Destroy React, claim territory
+      const appRoot = document.getElementById('app-root');
+      if (window.__REACT_ROOT__) {
+        window.__REACT_ROOT__.unmount();
+      }
+      appRoot.innerHTML = '';
+      appRoot.classList.add('fast-aether');
+
+      // Create Aether runtime
+      const aether = document.createElement('aether-runtime');
+      aether.setAttribute('endpoint', '/api/sse');
+      aether.setAttribute('namespace', 'fast-dashboard');
+
+      // Add sliver content template
+      aether.innerHTML = `
+        <h2>Aether Dashboard (Zero Hydration)</h2>
+        <p style="color: #94a3b8;">
+          Instant projection via SSE. No virtual DOM, no reconciliation.
+          CSS variables for style, textContent for data.
+        </p>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-value" data-aether-slot="cpu">--</div>
+            <div class="metric-label">CPU Usage</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" data-aether-slot="memory">--</div>
+            <div class="metric-label">Memory</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" data-aether-slot="requests">--</div>
+            <div class="metric-label">Requests/sec</div>
+          </div>
+        </div>
+      `;
+
+      appRoot.appendChild(aether);
+
+      const mountTime = (performance.now() - start).toFixed(2);
+      document.getElementById('aether-time').textContent = mountTime + 'ms';
+
+      // Track first SSE frame
+      const sseStart = performance.now();
+      const observer = new MutationObserver((mutations, obs) => {
+        for (const m of mutations) {
+          if (m.target.dataset?.aetherSlot) {
+            document.getElementById('sse-time').textContent =
+              (performance.now() - sseStart).toFixed(2) + 'ms';
+            obs.disconnect();
+            break;
+          }
+        }
+      });
+      observer.observe(aether, { subtree: true, characterData: true, childList: true });
+    });
+
+    document.getElementById('reset-btn').addEventListener('click', () => {
+      location.reload();
+    });
+  </script>
+</body>
+</html>
