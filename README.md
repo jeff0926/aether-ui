@@ -91,6 +91,6 @@ cd aether-ui && npm install && npm run dev
 MIT
 
 **Paper:** "Semantic Projection: Zero-Hydration UI for Agentic Systems" (in preparation, 2026)
-```
 
-**Copy-paste ready.**
+
+
