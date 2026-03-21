@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EDS Block Library | Aether UI</title>
+  <link rel="stylesheet" href="blocks/eds-blocks.css">
+  <script src="../../dist/aether-kernel.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f5f5f5; }
+
+    .page-content {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .block-section {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .block-section h2 {
+      color: var(--eds-text);
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .block-section h2 code {
+      font-size: 0.9rem;
+      background: var(--eds-surface);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      color: var(--eds-primary);
+    }
+
+    .block-section p.desc {
+      color: var(--eds-text-muted);
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .block-demo {
+      border: 1px solid var(--eds-border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      background: #fafafa;
+      margin-bottom: 1rem;
+    }
+
+    .block-code {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.8rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .block-code .tag { color: #7dd3fc; }
+    .block-code .attr { color: #fde68a; }
+    .block-code .val { color: #86efac; }
+    .block-code .comment { color: #64748b; }
+
+    .aether-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: #e6f4ef;
+      color: var(--eds-success);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+
+    .cards-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .alerts-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    aether-runtime { display: block; }
+  </style>
+</head>
+<body>
+  <!-- EDS Navigation -->
+  <nav class="eds-nav">
+    <a href="index.html" class="eds-nav__brand">
+      <svg class="eds-nav__logo" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="14" stroke="#1473e6" stroke-width="2"/>
+        <path d="M10 16h12M16 10v12" stroke="#1473e6" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span>EDS Leapfrog</span>
+    </a>
+    <ul class="eds-nav__links">
+      <li><a href="index.html" class="eds-nav__link">Home</a></li>
+      <li><a href="adobe-way.html" class="eds-nav__link">Adobe Way</a></li>
+      <li><a href="aether-way.html" class="eds-nav__link">Aether Way</a></li>
+      <li><a href="side-by-side.html" class="eds-nav__link">Compare</a></li>
+      <li><a href="blocks.html" class="eds-nav__link eds-nav__link--active">Blocks</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-content">
+    <h1 style="margin-bottom: 0.5rem;">EDS Block Library</h1>
+    <p style="color: var(--eds-text-muted); margin-bottom: 2rem;">All EDS blocks with Aether possession support. Add <code>data-aether-slot</code> to make content dynamic.</p>
+
+    <!-- Card Block -->
+    <section class="block-section">
+      <h2><code>eds-card</code> <span class="aether-badge">Possessable</span></h2>
+      <p class="desc">Content card with image, title, and description. Perfect for product listings, articles, or feature highlights.</p>
+
+      <div class="block-demo">
+        <div class="cards-row">
+          <div class="eds-card">
+            <img class="eds-card__image" src="https://via.placeholder.com/400x200/1473e6/ffffff?text=Card+Image" alt="Demo">
+            <div class="eds-card__content">
+              <h3 class="eds-card__title" data-aether-slot="card-title">Card Title</h3>
+              <p class="eds-card__description" data-aether-slot="card-desc">Card description text goes here. Supports dynamic content via Aether slots.</p>
+            </div>
+          </div>
+          <div class="eds-card">
+            <img class="eds-card__image" src="https://via.placeholder.com/400x200/2d9d78/ffffff?text=Another+Card" alt="Demo">
+            <div class="eds-card__content">
+              <h3 class="eds-card__title">Static Card</h3>
+              <p class="eds-card__description">This card has no Aether slots - it's static EDS content.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block-code"><span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"eds-card"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;img</span> <span class="attr">class</span>=<span class="val">"eds-card__image"</span> <span class="attr">src</span>=<span class="val">"..."</span> <span class="tag">/&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"eds-card__content"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;h3</span> <span class="attr">class</span>=<span class="val">"eds-card__title"</span> <span class="attr">data-aether-slot</span>=<span class="val">"title"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/h3&gt;</span>
+    <span class="tag">&lt;p</span> <span class="attr">class</span>=<span class="val">"eds-card__description"</span> <span class="attr">data-aether-slot</span>=<span class="val">"desc"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span></div>
+    </section>
+
+    <!-- Alert Block -->
+    <section class="block-section">
+      <h2><code>eds-alert</code> <span class="aether-badge">Possessable</span></h2>
+      <p class="desc">Alert messages with variants: info, success, warning, danger. CSS variables control colors.</p>
+
+      <div class="block-demo">
+        <div class="alerts-col">
+          <aether-runtime endpoint="/api/sse" namespace="eds-demo">
+            <div class="eds-alert eds-alert--info">
+              <span class="eds-alert__icon">&#8505;&#65039;</span>
+              <div class="eds-alert__content">
+                <h4 class="eds-alert__title" data-aether-slot="alert-title">Live Alert</h4>
+                <p class="eds-alert__message" data-aether-slot="alert-body">Connected to SSE stream</p>
+              </div>
+            </div>
+          </aether-runtime>
+
+          <div class="eds-alert eds-alert--success">
+            <span class="eds-alert__icon">&#9989;</span>
+            <div class="eds-alert__content">
+              <h4 class="eds-alert__title">Success</h4>
+              <p class="eds-alert__message">Operation completed successfully.</p>
+            </div>
+          </div>
+
+          <div class="eds-alert eds-alert--warning">
+            <span class="eds-alert__icon">&#9888;&#65039;</span>
+            <div class="eds-alert__content">
+              <h4 class="eds-alert__title">Warning</h4>
+              <p class="eds-alert__message">Please review before proceeding.</p>
+            </div>
+          </div>
+
+          <div class="eds-alert eds-alert--danger">
+            <span class="eds-alert__icon">&#10060;</span>
+            <div class="eds-alert__content">
+              <h4 class="eds-alert__title">Error</h4>
+              <p class="eds-alert__message">An error occurred. Please try again.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block-code"><span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"eds-alert eds-alert--info"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;span</span> <span class="attr">class</span>=<span class="val">"eds-alert__icon"</span><span class="tag">&gt;</span>&#x2139;&#xFE0F;<span class="tag">&lt;/span&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"eds-alert__content"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;h4</span> <span class="attr">class</span>=<span class="val">"eds-alert__title"</span> <span class="attr">data-aether-slot</span>=<span class="val">"alert-title"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/h4&gt;</span>
+    <span class="tag">&lt;p</span> <span class="attr">class</span>=<span class="val">"eds-alert__message"</span> <span class="attr">data-aether-slot</span>=<span class="val">"alert-body"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="comment">&lt;!-- Variants: eds-alert--info, --success, --warning, --danger --&gt;</span></div>
+    </section>
+
+    <!-- Hero Block -->
+    <section class="block-section">
+      <h2><code>eds-hero</code> <span class="aether-badge">Possessable</span></h2>
+      <p class="desc">Large banner section with eyebrow, title, subtitle, and action buttons. Gradient background via CSS variables.</p>
+
+      <div class="block-demo" style="padding: 0; overflow: hidden; border-radius: 8px;">
+        <section class="eds-hero" style="padding: 2rem;">
+          <div class="eds-hero__content">
+            <p class="eds-hero__eyebrow" data-aether-slot="hero-eyebrow">Eyebrow Text</p>
+            <h1 class="eds-hero__title" data-aether-slot="hero-title" style="font-size: 2rem;">Hero Title</h1>
+            <p class="eds-hero__subtitle" data-aether-slot="hero-subtitle">Hero subtitle with supporting text and call to action.</p>
+            <div class="eds-hero__actions">
+              <a href="#" class="eds-button eds-button--primary">Primary Action</a>
+              <a href="#" class="eds-button eds-button--secondary">Secondary</a>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="block-code"><span class="tag">&lt;section</span> <span class="attr">class</span>=<span class="val">"eds-hero"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"eds-hero__content"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;p</span> <span class="attr">class</span>=<span class="val">"eds-hero__eyebrow"</span> <span class="attr">data-aether-slot</span>=<span class="val">"eyebrow"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;h1</span> <span class="attr">class</span>=<span class="val">"eds-hero__title"</span> <span class="attr">data-aether-slot</span>=<span class="val">"title"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;p</span> <span class="attr">class</span>=<span class="val">"eds-hero__subtitle"</span> <span class="attr">data-aether-slot</span>=<span class="val">"subtitle"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"eds-hero__actions"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/section&gt;</span>
+
+<span class="comment">&lt;!-- CSS vars: --hero-bg-start, --hero-bg-end --&gt;</span></div>
+    </section>
+
+    <!-- Navigation Block -->
+    <section class="block-section">
+      <h2><code>eds-nav</code></h2>
+      <p class="desc">Navigation header with brand, links, and actions. Typically static, but brand name can be possessed.</p>
+
+      <div class="block-demo" style="padding: 0; overflow: hidden; border-radius: 8px;">
+        <nav class="eds-nav" style="border-radius: 8px;">
+          <a href="#" class="eds-nav__brand">
+            <svg class="eds-nav__logo" viewBox="0 0 32 32" fill="none" width="24" height="24">
+              <circle cx="16" cy="16" r="14" stroke="#1473e6" stroke-width="2"/>
+            </svg>
+            <span data-aether-slot="brand">Brand Name</span>
+          </a>
+          <ul class="eds-nav__links">
+            <li><a href="#" class="eds-nav__link eds-nav__link--active">Home</a></li>
+            <li><a href="#" class="eds-nav__link">Products</a></li>
+            <li><a href="#" class="eds-nav__link">About</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="block-code"><span class="tag">&lt;nav</span> <span class="attr">class</span>=<span class="val">"eds-nav"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"#"</span> <span class="attr">class</span>=<span class="val">"eds-nav__brand"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;img</span> <span class="attr">class</span>=<span class="val">"eds-nav__logo"</span> <span class="attr">src</span>=<span class="val">"..."</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;span&gt;</span>Brand<span class="tag">&lt;/span&gt;</span>
+  <span class="tag">&lt;/a&gt;</span>
+  <span class="tag">&lt;ul</span> <span class="attr">class</span>=<span class="val">"eds-nav__links"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;li&gt;&lt;a</span> <span class="attr">class</span>=<span class="val">"eds-nav__link"</span><span class="tag">&gt;</span>Link<span class="tag">&lt;/a&gt;&lt;/li&gt;</span>
+  <span class="tag">&lt;/ul&gt;</span>
+<span class="tag">&lt;/nav&gt;</span></div>
+    </section>
+
+    <!-- Footer Block -->
+    <section class="block-section">
+      <h2><code>eds-footer</code></h2>
+      <p class="desc">Site footer with grid sections, links, and copyright. Copyright text can be possessed for dynamic year.</p>
+
+      <div class="block-demo" style="padding: 0; overflow: hidden; border-radius: 8px;">
+        <footer class="eds-footer" style="border-radius: 8px;">
+          <div class="eds-footer__grid">
+            <div class="eds-footer__section">
+              <h4>Products</h4>
+              <ul class="eds-footer__links">
+                <li><a href="#" class="eds-footer__link">Features</a></li>
+                <li><a href="#" class="eds-footer__link">Pricing</a></li>
+              </ul>
+            </div>
+            <div class="eds-footer__section">
+              <h4>Company</h4>
+              <ul class="eds-footer__links">
+                <li><a href="#" class="eds-footer__link">About</a></li>
+                <li><a href="#" class="eds-footer__link">Contact</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="eds-footer__bottom">
+            <p data-aether-slot="copyright">&copy; 2026 Company Name. All rights reserved.</p>
+          </div>
+        </footer>
+      </div>
+
+      <div class="block-code"><span class="tag">&lt;footer</span> <span class="attr">class</span>=<span class="val">"eds-footer"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"eds-footer__grid"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"eds-footer__section"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h4&gt;</span>Section<span class="tag">&lt;/h4&gt;</span>
+      <span class="tag">&lt;ul</span> <span class="attr">class</span>=<span class="val">"eds-footer__links"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/ul&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"eds-footer__bottom"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;p</span> <span class="attr">data-aether-slot</span>=<span class="val">"copyright"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/footer&gt;</span></div>
+    </section>
+  </div>
+
+  <!-- Web Component -->
+  <script type="module" src="../../src/adapter/web-component.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 320" width="400" height="320">
+  <style>
+    .box { fill: #f8fafc; stroke: #475569; stroke-width: 1.5; }
+    .box-react { fill: #fef3c7; stroke: #f59e0b; stroke-width: 1.5; }
+    .box-aether { fill: #dbeafe; stroke: #3b82f6; stroke-width: 1.5; }
+    .box-pure { fill: #dcfce7; stroke: #22c55e; stroke-width: 1.5; }
+    .arrow { fill: none; stroke: #94a3b8; stroke-width: 1.5; marker-end: url(#arr2); }
+    .label { font-family: system-ui, sans-serif; font-size: 10px; fill: #334155; }
+    .title { font-family: system-ui, sans-serif; font-size: 11px; fill: #1e293b; font-weight: 600; }
+    .mode { font-family: system-ui, sans-serif; font-size: 12px; fill: #0f172a; font-weight: 700; }
+    .sub { font-family: monospace; font-size: 8px; fill: #64748b; }
+    .divider { stroke: #e2e8f0; stroke-width: 1; }
+  </style>
+  <defs>
+    <marker id="arr2" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto">
+      <polygon points="0 0, 6 2.5, 0 5" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="200" y="20" text-anchor="middle" class="title">Adapter Integration Modes</text>
+
+  <!-- Mode 1: Snap-In -->
+  <rect x="10" y="35" width="120" height="90" rx="6" fill="none" stroke="#cbd5e1" stroke-dasharray="4"/>
+  <text x="70" y="50" text-anchor="middle" class="mode">Snap-In</text>
+
+  <rect x="20" y="60" width="45" height="25" rx="3" class="box-react"/>
+  <text x="42" y="76" text-anchor="middle" class="label">React</text>
+
+  <rect x="75" y="60" width="45" height="25" rx="3" class="box-aether"/>
+  <text x="97" y="76" text-anchor="middle" class="label">Aether</text>
+
+  <text x="70" y="105" text-anchor="middle" class="sub">Coexistence</text>
+  <text x="70" y="118" text-anchor="middle" class="sub">React + Aether</text>
+
+  <!-- Mode 2: Jump-In -->
+  <rect x="140" y="35" width="120" height="90" rx="6" fill="none" stroke="#cbd5e1" stroke-dasharray="4"/>
+  <text x="200" y="50" text-anchor="middle" class="mode">Jump-In</text>
+
+  <rect x="150" y="60" width="45" height="25" rx="3" class="box-react"/>
+  <text x="172" y="76" text-anchor="middle" class="label">React</text>
+  <text x="172" y="76" text-anchor="middle" class="label" style="text-decoration: line-through; fill: #dc2626;">React</text>
+
+  <path d="M 200 72 L 215 72" class="arrow"/>
+
+  <rect x="220" y="60" width="30" height="25" rx="3" class="box-aether"/>
+  <text x="235" y="76" text-anchor="middle" class="label">A</text>
+
+  <text x="200" y="105" text-anchor="middle" class="sub">Migration</text>
+  <text x="200" y="118" text-anchor="middle" class="sub">Replace React</text>
+
+  <!-- Mode 3: Net-New -->
+  <rect x="270" y="35" width="120" height="90" rx="6" fill="none" stroke="#cbd5e1" stroke-dasharray="4"/>
+  <text x="330" y="50" text-anchor="middle" class="mode">Net-New</text>
+
+  <rect x="295" y="60" width="70" height="25" rx="3" class="box-pure"/>
+  <text x="330" y="76" text-anchor="middle" class="label">Pure Aether</text>
+
+  <text x="330" y="105" text-anchor="middle" class="sub">Greenfield</text>
+  <text x="330" y="118" text-anchor="middle" class="sub">No framework</text>
+
+  <!-- Flowchart section -->
+  <line x1="10" y1="140" x2="390" y2="140" class="divider"/>
+  <text x="200" y="155" text-anchor="middle" class="title">Decision Flow</text>
+
+  <!-- Start -->
+  <ellipse cx="200" cy="175" rx="35" ry="15" class="box"/>
+  <text x="200" y="179" text-anchor="middle" class="label">Start</text>
+
+  <!-- Decision 1 -->
+  <polygon points="200,200 250,225 200,250 150,225" class="box"/>
+  <text x="200" y="228" text-anchor="middle" class="sub">Existing</text>
+  <text x="200" y="238" text-anchor="middle" class="sub">React?</text>
+  <path d="M 200 190 L 200 200" class="arrow"/>
+
+  <!-- Yes branch -->
+  <polygon points="100,260 140,280 100,300 60,280" class="box"/>
+  <text x="100" y="283" text-anchor="middle" class="sub">Keep</text>
+  <text x="100" y="293" text-anchor="middle" class="sub">React?</text>
+  <path d="M 150 225 L 120 225 L 120 255 L 100 260" class="arrow"/>
+  <text x="130" y="220" class="sub">Yes</text>
+
+  <!-- Snap-in result -->
+  <rect x="30" y="305" width="60" height="20" rx="3" class="box-react"/>
+  <text x="60" y="318" text-anchor="middle" class="label">Snap-In</text>
+  <path d="M 80 280 L 60 280 L 60 305" class="arrow"/>
+  <text x="70" y="295" class="sub">Yes</text>
+
+  <!-- Jump-in result -->
+  <rect x="110" y="305" width="60" height="20" rx="3" class="box-aether"/>
+  <text x="140" y="318" text-anchor="middle" class="label">Jump-In</text>
+  <path d="M 120 280 L 140 280 L 140 305" class="arrow"/>
+  <text x="130" y="295" class="sub">No</text>
+
+  <!-- No branch - Net-new -->
+  <rect x="270" y="260" width="70" height="25" rx="3" class="box-pure"/>
+  <text x="305" y="276" text-anchor="middle" class="label">Net-New</text>
+  <path d="M 250 225 L 280 225 L 280 255 L 305 260" class="arrow"/>
+  <text x="260" y="220" class="sub">No</text>
+</svg>

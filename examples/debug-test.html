@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Aether Debug Test</title>
+  <script src="../dist/aether-kernel.min.js"></script>
+  <style>
+    body { font-family: system-ui; padding: 2rem; max-width: 800px; margin: 0 auto; }
+    .debug { background: #1e293b; color: #22c55e; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 12px; max-height: 300px; overflow-y: auto; margin-top: 1rem; }
+    .card { background: #f1f5f9; padding: 1rem; border-radius: 8px; margin-top: 1rem; border-left: 4px solid var(--accent-color, #0ea5e9); }
+    h2 { margin: 0; color: var(--accent-color, #0ea5e9); }
+  </style>
+</head>
+<body>
+  <h1>Aether Debug Test</h1>
+  <p>This page tests the kernel directly without the web component.</p>
+
+  <div id="aether-container">
+    <div class="card">
+      <h2 data-aether-slot="alert-title">Waiting for SSE...</h2>
+      <p data-aether-slot="alert-body">Not connected yet</p>
+      <small data-aether-slot="alert-time">--:--:--</small>
+    </div>
+  </div>
+
+  <div class="debug" id="debug-log"></div>
+
+  <script>
+    const debugLog = document.getElementById('debug-log');
+    const originalLog = console.log;
+    const originalError = console.error;
+
+    function log(msg, ...args) {
+      const line = document.createElement('div');
+      line.textContent = `${new Date().toLocaleTimeString()} | ${msg} ${args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')}`;
+      debugLog.appendChild(line);
+      debugLog.scrollTop = debugLog.scrollHeight;
+      originalLog(msg, ...args);
+    }
+
+    console.log = log;
+    console.error = (...args) => { log('ERROR:', ...args); originalError(...args); };
+
+    log('Page loaded');
+    log('window.AetherKernel:', typeof window.AetherKernel);
+
+    if (window.AetherKernel) {
+      const container = document.getElementById('aether-container');
+      log('Container:', container.tagName, container.id);
+      log('Slots found:', container.querySelectorAll('[data-aether-slot]').length);
+
+      const config = {
+        endpoint: '/api/sse',
+        namespace: 'weather-alert'
+      };
+      log('Creating kernel with config:', config);
+
+      const kernel = new window.AetherKernel(container, config);
+      log('Kernel created:', kernel);
+    } else {
+      log('ERROR: AetherKernel not found!');
+    }
+  </script>
+</body>
+</html>

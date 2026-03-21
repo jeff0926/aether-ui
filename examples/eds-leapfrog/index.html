@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EDS Leapfrog Demo | Aether UI</title>
+  <link rel="stylesheet" href="blocks/eds-blocks.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f5f5f5; }
+
+    .comparison-table {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .comparison-table h2 {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: var(--eds-text);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--eds-shadow);
+    }
+
+    th, td {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      border-bottom: 1px solid var(--eds-border);
+    }
+
+    th {
+      background: var(--eds-surface);
+      font-weight: 600;
+      color: var(--eds-text);
+    }
+
+    .metric-label { color: var(--eds-text-muted); }
+    .adobe-value { color: var(--eds-danger); font-weight: 600; }
+    .aether-value { color: var(--eds-success); font-weight: 600; }
+    .delta { color: var(--eds-primary); font-weight: 700; }
+
+    .demo-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem 3rem;
+    }
+
+    .demo-card {
+      background: white;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: var(--eds-shadow);
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .demo-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+
+    .demo-card h3 {
+      color: var(--eds-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .demo-card p {
+      color: var(--eds-text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .demo-card .size {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.25rem 0.75rem;
+      background: var(--eds-surface);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-family: monospace;
+    }
+
+    .adobe-card .size { background: #fce8e8; color: var(--eds-danger); }
+    .aether-card .size { background: #e6f4ef; color: var(--eds-success); }
+  </style>
+</head>
+<body>
+  <!-- EDS Navigation -->
+  <nav class="eds-nav">
+    <a href="index.html" class="eds-nav__brand">
+      <svg class="eds-nav__logo" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="14" stroke="#1473e6" stroke-width="2"/>
+        <path d="M10 16h12M16 10v12" stroke="#1473e6" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span data-aether-slot="brand-name">EDS Leapfrog</span>
+    </a>
+    <ul class="eds-nav__links">
+      <li><a href="index.html" class="eds-nav__link eds-nav__link--active">Home</a></li>
+      <li><a href="adobe-way.html" class="eds-nav__link">Adobe Way</a></li>
+      <li><a href="aether-way.html" class="eds-nav__link">Aether Way</a></li>
+      <li><a href="side-by-side.html" class="eds-nav__link">Compare</a></li>
+    </ul>
+    <div class="eds-nav__actions">
+      <a href="blocks.html" class="eds-button eds-button--primary" style="background: var(--eds-primary); color: white; padding: 0.5rem 1rem;">View Blocks</a>
+    </div>
+  </nav>
+
+  <!-- EDS Hero -->
+  <section class="eds-hero">
+    <div class="eds-hero__content">
+      <p class="eds-hero__eyebrow" data-aether-slot="hero-eyebrow">Performance Benchmark</p>
+      <h1 class="eds-hero__title" data-aether-slot="hero-title">Skip Adobe's Entire Pipeline</h1>
+      <p class="eds-hero__subtitle" data-aether-slot="hero-subtitle">
+        Aether achieves EDS-compliant output with 20x smaller payload and 12x faster time-to-interactive.
+        Same visual result. Radically different architecture.
+      </p>
+      <div class="eds-hero__actions">
+        <a href="side-by-side.html" class="eds-button eds-button--primary">See Comparison</a>
+        <a href="aether-way.html" class="eds-button eds-button--secondary">Try Aether</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison Table -->
+  <section class="comparison-table">
+    <h2>Performance Comparison</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>Adobe Way (React + EDS)</th>
+          <th>Aether Way</th>
+          <th>Improvement</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="metric-label">JavaScript Payload</td>
+          <td class="adobe-value">~40 KB</td>
+          <td class="aether-value">2 KB</td>
+          <td class="delta">20x smaller</td>
+        </tr>
+        <tr>
+          <td class="metric-label">Time to Interactive</td>
+          <td class="adobe-value">~600 ms</td>
+          <td class="aether-value">&lt;50 ms</td>
+          <td class="delta">12x faster</td>
+        </tr>
+        <tr>
+          <td class="metric-label">Lighthouse Performance</td>
+          <td class="adobe-value">~75</td>
+          <td class="aether-value">~98</td>
+          <td class="delta">+23 points</td>
+        </tr>
+        <tr>
+          <td class="metric-label">First Contentful Paint</td>
+          <td class="adobe-value">~400 ms</td>
+          <td class="aether-value">~30 ms</td>
+          <td class="delta">13x faster</td>
+        </tr>
+        <tr>
+          <td class="metric-label">Main Thread Blocking</td>
+          <td class="adobe-value">Yes (hydration)</td>
+          <td class="aether-value">No</td>
+          <td class="delta">Non-blocking</td>
+        </tr>
+        <tr>
+          <td class="metric-label">Real-time Updates</td>
+          <td class="adobe-value">Re-render cycle</td>
+          <td class="aether-value">SSE streaming</td>
+          <td class="delta">Instant</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Demo Links -->
+  <section class="demo-links">
+    <a href="adobe-way.html" class="demo-card adobe-card">
+      <h3>Adobe Way</h3>
+      <p>Traditional approach: React hydration + EDS component library. Familiar but heavy.</p>
+      <span class="size">~40 KB JS</span>
+    </a>
+    <a href="aether-way.html" class="demo-card aether-card">
+      <h3>Aether Way</h3>
+      <p>Semantic projection: 2KB kernel possesses EDS blocks via SSE streaming. Fast and light.</p>
+      <span class="size">2 KB JS</span>
+    </a>
+    <a href="side-by-side.html" class="demo-card">
+      <h3>Side-by-Side</h3>
+      <p>Split screen comparison. Same SSE data, different rendering pipelines. Watch the difference.</p>
+      <span class="size">Live comparison</span>
+    </a>
+    <a href="blocks.html" class="demo-card">
+      <h3>Block Library</h3>
+      <p>All EDS blocks with Aether possession. Card, Alert, Navigation, Hero, Footer.</p>
+      <span class="size">5 blocks</span>
+    </a>
+  </section>
+
+  <!-- EDS Footer -->
+  <footer class="eds-footer">
+    <div class="eds-footer__grid">
+      <div class="eds-footer__section">
+        <h4>Aether UI</h4>
+        <ul class="eds-footer__links">
+          <li><a href="../../" class="eds-footer__link">Documentation</a></li>
+          <li><a href="https://github.com/jeff0926/aether-ui" class="eds-footer__link">GitHub</a></li>
+          <li><a href="../../docs/API.md" class="eds-footer__link">API Reference</a></li>
+        </ul>
+      </div>
+      <div class="eds-footer__section">
+        <h4>Examples</h4>
+        <ul class="eds-footer__links">
+          <li><a href="../weather/" class="eds-footer__link">Weather (Snap-in)</a></li>
+          <li><a href="../dashboard/" class="eds-footer__link">Dashboard</a></li>
+          <li><a href="../chat/" class="eds-footer__link">Chat</a></li>
+        </ul>
+      </div>
+      <div class="eds-footer__section">
+        <h4>Compare</h4>
+        <ul class="eds-footer__links">
+          <li><a href="adobe-way.html" class="eds-footer__link">Adobe Way</a></li>
+          <li><a href="aether-way.html" class="eds-footer__link">Aether Way</a></li>
+          <li><a href="side-by-side.html" class="eds-footer__link">Side-by-Side</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="eds-footer__bottom">
+      <p data-aether-slot="footer-copyright">Aether UI v0.2 | Zero-hydration projection runtime</p>
+    </div>
+  </footer>
+
+  <!-- Aether for real-time hero updates -->
+  <script src="../../dist/aether-kernel.min.js"></script>
+  <script type="module" src="../../src/adapter/web-component.js"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kernel Constructor Test</title>
+</head>
+<body>
+  <h1>Kernel Constructor Test</h1>
+  <pre id="output"></pre>
+
+  <script src="../dist/aether-kernel.min.js"></script>
+  <script>
+    const out = document.getElementById('output');
+    function log(msg) {
+      out.textContent += msg + '\n';
+      console.log(msg);
+    }
+
+    log('After kernel load:');
+    log('typeof window.AetherKernel: ' + typeof window.AetherKernel);
+    log('window.AetherKernel: ' + window.AetherKernel);
+    log('window.AetherKernel.name: ' + (window.AetherKernel?.name || 'N/A'));
+
+    if (typeof window.AetherKernel === 'function') {
+      log('\n✓ SUCCESS: AetherKernel is a constructor!');
+      try {
+        const div = document.createElement('div');
+        const k = new window.AetherKernel(div, { endpoint: '/test', namespace: 'test' });
+        log('✓ Instance created: ' + k);
+      } catch(e) {
+        log('✗ Instantiation error: ' + e.message);
+      }
+    } else {
+      log('\n✗ FAILED: AetherKernel is NOT a function');
+      log('Keys on window.AetherKernel: ' + Object.keys(window.AetherKernel || {}));
+    }
+  </script>
+</body>
+</html>

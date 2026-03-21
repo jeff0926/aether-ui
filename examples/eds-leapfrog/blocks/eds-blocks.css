@@ -1,0 +1,337 @@
+/**
+ * EDS Block Styles
+ * Adobe Experience Design System compatible blocks
+ * Aether-possessable via data-aether-slot attributes
+ */
+
+:root {
+  --eds-primary: #1473e6;
+  --eds-secondary: #6e6e6e;
+  --eds-success: #2d9d78;
+  --eds-warning: #e68619;
+  --eds-danger: #d7373f;
+  --eds-background: #ffffff;
+  --eds-surface: #f5f5f5;
+  --eds-text: #2c2c2c;
+  --eds-text-muted: #6e6e6e;
+  --eds-border: #e1e1e1;
+  --eds-radius: 4px;
+  --eds-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  --eds-transition: 0.2s ease;
+}
+
+/* EDS Card Block */
+.eds-card {
+  background: var(--eds-background);
+  border: 1px solid var(--eds-border);
+  border-radius: var(--eds-radius);
+  box-shadow: var(--eds-shadow);
+  overflow: hidden;
+  transition: transform var(--eds-transition), box-shadow var(--eds-transition);
+}
+
+.eds-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.eds-card__image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  background: var(--eds-surface);
+}
+
+.eds-card__content {
+  padding: 1.5rem;
+}
+
+.eds-card__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--eds-text);
+  margin: 0 0 0.5rem;
+  transition: color var(--eds-transition);
+}
+
+.eds-card__description {
+  font-size: 0.9rem;
+  color: var(--eds-text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.eds-card__meta {
+  font-size: 0.75rem;
+  color: var(--eds-secondary);
+  margin-top: 1rem;
+}
+
+/* EDS Alert Block */
+.eds-alert {
+  padding: 1rem 1.5rem;
+  border-radius: var(--eds-radius);
+  border-left: 4px solid var(--accent-color, var(--eds-primary));
+  background: var(--background-subtle, #e5f0ff);
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: all var(--eds-transition);
+}
+
+.eds-alert--info {
+  --accent-color: var(--eds-primary);
+  --background-subtle: #e5f0ff;
+}
+
+.eds-alert--success {
+  --accent-color: var(--eds-success);
+  --background-subtle: #e6f4ef;
+}
+
+.eds-alert--warning {
+  --accent-color: var(--eds-warning);
+  --background-subtle: #fef3e5;
+}
+
+.eds-alert--danger {
+  --accent-color: var(--eds-danger);
+  --background-subtle: #fce8e8;
+}
+
+.eds-alert__icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.eds-alert__content {
+  flex: 1;
+}
+
+.eds-alert__title {
+  font-weight: 600;
+  color: var(--accent-color, var(--eds-text));
+  margin: 0 0 0.25rem;
+  transition: color var(--eds-transition);
+}
+
+.eds-alert__message {
+  font-size: 0.9rem;
+  color: var(--eds-text);
+  margin: 0;
+}
+
+/* EDS Navigation Block */
+.eds-nav {
+  background: var(--eds-background);
+  border-bottom: 1px solid var(--eds-border);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.eds-nav__brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--eds-text);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.eds-nav__logo {
+  width: 32px;
+  height: 32px;
+}
+
+.eds-nav__links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.eds-nav__link {
+  color: var(--eds-text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color var(--eds-transition);
+}
+
+.eds-nav__link:hover,
+.eds-nav__link--active {
+  color: var(--eds-primary);
+}
+
+.eds-nav__actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* EDS Hero Block */
+.eds-hero {
+  background: linear-gradient(135deg, var(--hero-bg-start, #1473e6) 0%, var(--hero-bg-end, #0d66d0) 100%);
+  color: white;
+  padding: 4rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.eds-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></svg>');
+  background-size: 100px 100px;
+  opacity: 0.5;
+}
+
+.eds-hero__content {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.eds-hero__eyebrow {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.9;
+  margin-bottom: 1rem;
+}
+
+.eds-hero__title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 0 0 1rem;
+  line-height: 1.1;
+}
+
+.eds-hero__subtitle {
+  font-size: 1.25rem;
+  opacity: 0.9;
+  margin: 0 0 2rem;
+  line-height: 1.5;
+}
+
+.eds-hero__actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* EDS Footer Block */
+.eds-footer {
+  background: var(--eds-text);
+  color: white;
+  padding: 3rem 2rem 1.5rem;
+}
+
+.eds-footer__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+}
+
+.eds-footer__section h4 {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 1rem;
+  color: rgba(255,255,255,0.7);
+}
+
+.eds-footer__links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.eds-footer__link {
+  color: rgba(255,255,255,0.9);
+  text-decoration: none;
+  font-size: 0.9rem;
+  display: block;
+  padding: 0.25rem 0;
+  transition: color var(--eds-transition);
+}
+
+.eds-footer__link:hover {
+  color: white;
+}
+
+.eds-footer__bottom {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 1.5rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.6);
+}
+
+/* EDS Button */
+.eds-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: var(--eds-radius);
+  border: none;
+  cursor: pointer;
+  transition: all var(--eds-transition);
+  text-decoration: none;
+}
+
+.eds-button--primary {
+  background: white;
+  color: var(--eds-primary);
+}
+
+.eds-button--primary:hover {
+  background: rgba(255,255,255,0.9);
+  transform: translateY(-1px);
+}
+
+.eds-button--secondary {
+  background: transparent;
+  color: white;
+  border: 2px solid rgba(255,255,255,0.5);
+}
+
+.eds-button--secondary:hover {
+  border-color: white;
+  background: rgba(255,255,255,0.1);
+}
+
+/* Aether possession indicators */
+[data-aether-slot] {
+  transition: all var(--tempo, 0.3s) ease;
+}
+
+[data-aether-possessable] {
+  position: relative;
+}
+
+[data-aether-connected] [data-aether-slot] {
+  animation: aether-pulse 0.3s ease;
+}
+
+@keyframes aether-pulse {
+  0% { opacity: 0.7; }
+  100% { opacity: 1; }
+}

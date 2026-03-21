@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Aether Orchestrator Test</title>
+  <style>
+    body { font-family: system-ui; padding: 2rem; max-width: 1000px; margin: 0 auto; background: #f8fafc; }
+    h1 { color: #0f172a; }
+    .subtitle { color: #64748b; margin-bottom: 2rem; }
+
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .panel h3 { margin-top: 0; color: #475569; }
+
+    .alert-card {
+      padding: 1rem;
+      border-radius: 8px;
+      background: var(--background-subtle, #f0f9ff);
+      border-left: 4px solid var(--accent-color, #0ea5e9);
+      margin-top: 1rem;
+      transition: all 0.3s;
+    }
+
+    .alert-card h4 {
+      margin: 0 0 0.5rem 0;
+      color: var(--accent-color, #0ea5e9);
+      transition: color 0.3s;
+    }
+
+    .state-display {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #1e293b;
+      color: #22c55e;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    .controls {
+      margin: 2rem 0;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+    }
+
+    button {
+      background: #0ea5e9;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-right: 0.5rem;
+    }
+    button:hover { background: #0284c7; }
+
+    .diagram-section {
+      margin: 2rem 0;
+      padding: 1rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .diagram-section img {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Orchestrator Test: Shared State</h1>
+  <p class="subtitle">Two Aether runtime elements sharing state via orchestrator</p>
+
+  <div class="controls">
+    <h3>Orchestrator Controls</h3>
+    <button onclick="broadcastColor('#dc2626')">Broadcast Red</button>
+    <button onclick="broadcastColor('#22c55e')">Broadcast Green</button>
+    <button onclick="broadcastColor('#0ea5e9')">Broadcast Blue</button>
+    <button onclick="broadcastColor('#f59e0b')">Broadcast Orange</button>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h3>Weather Alert (Primary)</h3>
+      <p>Namespace: weather-alert</p>
+      <aether-runtime
+        endpoint="/api/sse"
+        namespace="weather-alert"
+        orchestrator>
+        <div class="alert-card">
+          <h4 data-aether-slot="alert-title">Loading...</h4>
+          <p data-aether-slot="alert-body">Connecting...</p>
+          <small data-aether-slot="alert-time"></small>
+        </div>
+      </aether-runtime>
+    </div>
+
+    <div class="panel">
+      <h3>Secondary Alert</h3>
+      <p>Namespace: secondary-alert</p>
+      <aether-runtime
+        endpoint="/api/sse"
+        namespace="secondary-alert"
+        orchestrator>
+        <div class="alert-card">
+          <h4 data-aether-slot="alert-title">Loading...</h4>
+          <p data-aether-slot="alert-body">Connecting...</p>
+          <small data-aether-slot="alert-time"></small>
+        </div>
+      </aether-runtime>
+    </div>
+  </div>
+
+  <!-- Orchestrator Topology Diagram -->
+  <div class="diagram-section">
+    <img src="diagrams/orchestrator-mesh.svg" alt="Orchestrator hub/spoke topology"/>
+  </div>
+
+  <div class="state-display" id="state-log">
+    Orchestrator state will appear here...
+  </div>
+
+  <!-- Load orchestrator first -->
+  <script src="../dist/aether-orchestrator.min.js"></script>
+
+  <!-- Then kernel -->
+  <script src="../dist/aether-kernel.min.js"></script>
+
+  <!-- Then web component -->
+  <script type="module" src="../src/adapter/web-component.js"></script>
+
+  <script type="module">
+    const stateLog = document.getElementById('state-log');
+
+    function log(msg) {
+      const line = document.createElement('div');
+      line.textContent = `${new Date().toLocaleTimeString()} | ${msg}`;
+      stateLog.appendChild(line);
+      stateLog.scrollTop = stateLog.scrollHeight;
+    }
+
+    // Wait for orchestrator to be available
+    setTimeout(() => {
+      if (window.AetherOrchestrator) {
+        const orch = window.AetherOrchestrator.getInstance();
+        log('Orchestrator initialized');
+        log('Registered agents: ' + Array.from(orch.agents.keys()).join(', '));
+
+        // Listen for state changes
+        orch.onStateChange((vars) => {
+          log('State change: ' + JSON.stringify(vars));
+        });
+
+        // Expose for button controls
+        window.broadcastColor = (color) => {
+          log('Broadcasting --accent-color: ' + color);
+          orch.broadcast({ '--accent-color': color });
+        };
+      } else {
+        log('ERROR: Orchestrator not found');
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

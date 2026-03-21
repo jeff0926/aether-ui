@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <style>
+    .hub { fill: #0ea5e9; stroke: #0369a1; stroke-width: 2; }
+    .agent { fill: #f8fafc; stroke: #475569; stroke-width: 1.5; }
+    .agent-active { fill: #dcfce7; stroke: #22c55e; stroke-width: 2; }
+    .conn { fill: none; stroke: #94a3b8; stroke-width: 1.5; }
+    .conn-active { fill: none; stroke: #0ea5e9; stroke-width: 2; stroke-dasharray: 6 3; }
+    .broadcast { fill: none; stroke: #22c55e; stroke-width: 2; marker-end: url(#arr-g); }
+    .label { font-family: system-ui, sans-serif; font-size: 10px; fill: #334155; }
+    .title { font-family: system-ui, sans-serif; font-size: 11px; fill: #1e293b; font-weight: 600; }
+    .hub-label { font-family: system-ui, sans-serif; font-size: 9px; fill: white; font-weight: 600; }
+    .sub { font-family: monospace; font-size: 8px; fill: #64748b; }
+  </style>
+  <defs>
+    <marker id="arr-g" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto">
+      <polygon points="0 0, 6 2.5, 0 5" fill="#22c55e"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="200" y="20" text-anchor="middle" class="title">Orchestrator Hub/Spoke Topology</text>
+
+  <!-- Central Hub -->
+  <circle cx="200" cy="150" r="35" class="hub"/>
+  <text x="200" y="145" text-anchor="middle" class="hub-label">Orchestrator</text>
+  <text x="200" y="157" text-anchor="middle" class="hub-label">getInstance()</text>
+
+  <!-- Agent 1 - Top Left -->
+  <rect x="40" y="50" width="80" height="50" rx="6" class="agent-active"/>
+  <text x="80" y="72" text-anchor="middle" class="label">Agent 1</text>
+  <text x="80" y="88" text-anchor="middle" class="sub">weather-alert</text>
+  <line x1="120" y1="85" x2="168" y2="125" class="conn-active"/>
+
+  <!-- Agent 2 - Top Right -->
+  <rect x="280" y="50" width="80" height="50" rx="6" class="agent"/>
+  <text x="320" y="72" text-anchor="middle" class="label">Agent 2</text>
+  <text x="320" y="88" text-anchor="middle" class="sub">dashboard</text>
+  <line x1="280" y1="85" x2="232" y2="125" class="conn"/>
+
+  <!-- Agent 3 - Bottom Left -->
+  <rect x="40" y="200" width="80" height="50" rx="6" class="agent"/>
+  <text x="80" y="222" text-anchor="middle" class="label">Agent 3</text>
+  <text x="80" y="238" text-anchor="middle" class="sub">chat</text>
+  <line x1="120" y1="215" x2="168" y2="175" class="conn"/>
+
+  <!-- Agent 4 - Bottom Right -->
+  <rect x="280" y="200" width="80" height="50" rx="6" class="agent-active"/>
+  <text x="320" y="222" text-anchor="middle" class="label">Agent 4</text>
+  <text x="320" y="238" text-anchor="middle" class="sub">secondary</text>
+  <line x1="280" y1="215" x2="232" y2="175" class="conn-active"/>
+
+  <!-- Broadcast arrows -->
+  <path d="M 200 115 Q 140 80 120 75" class="broadcast"/>
+  <path d="M 200 185 Q 260 220 280 225" class="broadcast"/>
+
+  <!-- State box -->
+  <rect x="145" y="260" width="110" height="30" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="200" y="278" text-anchor="middle" class="sub">Global State Map</text>
+
+  <!-- Legend -->
+  <circle cx="30" cy="285" r="6" class="hub"/>
+  <text x="42" y="288" class="sub">Hub</text>
+  <rect x="75" y="279" width="12" height="12" rx="2" class="agent-active"/>
+  <text x="92" y="288" class="sub">Active</text>
+  <line x1="130" y1="285" x2="150" y2="285" class="broadcast"/>
+  <text x="155" y="288" class="sub">Broadcast</text>
+</svg>

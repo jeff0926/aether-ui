@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Direct Kernel Test (No Web Component)</title>
+  <style>
+    body { font-family: system-ui; padding: 2rem; max-width: 800px; margin: 0 auto; }
+    .card {
+      background: #f1f5f9;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      border-left: 4px solid var(--accent-color, #0ea5e9);
+      transition: all 0.3s;
+    }
+    h2 { margin: 0 0 0.5rem; color: var(--accent-color, #0ea5e9); }
+    pre { background: #1e293b; color: #22c55e; padding: 1rem; border-radius: 8px; font-size: 12px; max-height: 400px; overflow-y: auto; }
+    .test-section { margin: 2rem 0; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Direct Kernel Test (No Web Component)</h1>
+  <p>This test isolates the kernel from the web component wrapper.</p>
+
+  <div class="test-section">
+    <h3>Test Container</h3>
+    <div id="test-container">
+      <div class="card">
+        <h2 data-aether-slot="title">Initial Title</h2>
+        <p data-aether-slot="body">Initial body text</p>
+        <small data-aether-slot="time">--:--:--</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h3>Console Output</h3>
+    <pre id="log"></pre>
+  </div>
+
+  <script src="../dist/aether-kernel.min.js"></script>
+  <script>
+    const logEl = document.getElementById('log');
+    function log(msg) {
+      const line = `${new Date().toLocaleTimeString()} | ${msg}`;
+      logEl.textContent += line + '\n';
+      logEl.scrollTop = logEl.scrollHeight;
+      console.log(msg);
+    }
+
+    log('=== DIRECT KERNEL TEST ===');
+    log('');
+
+    // Step 1: Get container
+    const container = document.getElementById('test-container');
+    log('Step 1: Get container');
+    log('  container: ' + container);
+    log('  container.tagName: ' + container?.tagName);
+    log('  container.style: ' + container?.style);
+    log('  container.style exists: ' + !!container?.style);
+    log('');
+
+    // Step 2: Check AetherKernel
+    log('Step 2: Check AetherKernel');
+    log('  typeof window.AetherKernel: ' + typeof window.AetherKernel);
+    log('');
+
+    // Step 3: Create kernel instance (but don't connect to SSE)
+    log('Step 3: Create kernel instance');
+
+    // We'll create a modified instance that doesn't auto-connect
+    class TestKernel {
+      constructor(container) {
+        this.container = container;
+        log('  TestKernel created');
+        log('  this.container: ' + this.container);
+        log('  this.container.tagName: ' + this.container?.tagName);
+      }
+
+      applyVariables(vars) {
+        log('  applyVariables called with: ' + JSON.stringify(vars));
+        log('  this.container: ' + this.container);
+        log('  this.container type: ' + typeof this.container);
+        log('  this.container.tagName: ' + this.container?.tagName);
+        // Fix: Always use this.container directly (not shadowRoot)
+        const scope = this.container;
+        log('  scope: ' + scope);
+        log('  scope.style: ' + scope?.style);
+        log('  scope.style exists: ' + !!scope?.style);
+
+        if (!scope?.style) {
+          log('  ERROR: scope.style is undefined!');
+          return false;
+        }
+
+        Object.entries(vars).forEach(([key, value]) => {
+          log('  Setting ' + key + ' = ' + value);
+          scope.style.setProperty(key, value);
+        });
+        return true;
+      }
+
+      injectContent(contentMap) {
+        log('  injectContent called with: ' + JSON.stringify(contentMap));
+        log('  this.container: ' + this.container);
+
+        Object.entries(contentMap).forEach(([slot, text]) => {
+          const el = this.container.querySelector(`[data-aether-slot="${slot}"]`);
+          log('  Slot "' + slot + '": ' + (el ? 'FOUND' : 'NOT FOUND'));
+          if (el) {
+            el.textContent = text;
+          }
+        });
+        return true;
+      }
+    }
+
+    const kernel = new TestKernel(container);
+    log('');
+
+    // Step 4: Test applyVariables after 1 second
+    log('Step 4: Will test applyVariables in 1 second...');
+    setTimeout(() => {
+      log('');
+      log('=== Testing applyVariables ===');
+      const varsResult = kernel.applyVariables({
+        '--accent-color': '#dc2626',
+        '--tempo': '0.5s'
+      });
+      log('  applyVariables returned: ' + varsResult);
+      log('');
+
+      log('=== Testing injectContent ===');
+      const contentResult = kernel.injectContent({
+        'title': 'Updated Title!',
+        'body': 'Content was injected successfully.',
+        'time': new Date().toLocaleTimeString()
+      });
+      log('  injectContent returned: ' + contentResult);
+      log('');
+
+      log('=== TEST COMPLETE ===');
+      if (varsResult && contentResult) {
+        log('SUCCESS: Both methods work with direct div container!');
+        log('Bug is likely in web component wrapper, not kernel.');
+      } else {
+        log('FAILURE: Methods failed even with direct container.');
+        log('Bug is in kernel logic.');
+      }
+    }, 1000);
+
+    // Step 5: Also test with real AetherKernel (no SSE)
+    setTimeout(() => {
+      log('');
+      log('=== Testing REAL AetherKernel (manual call) ===');
+
+      // Create a second container for real kernel test
+      const container2 = document.createElement('div');
+      container2.id = 'real-kernel-test';
+      container2.innerHTML = '<span data-aether-slot="test">Real kernel slot</span>';
+      document.body.appendChild(container2);
+
+      log('Created container2: ' + container2.tagName + '#' + container2.id);
+      log('container2.style exists: ' + !!container2.style);
+
+      // Manually create kernel without letting it connect
+      const realKernel = Object.create(window.AetherKernel.prototype);
+      realKernel.container = container2;
+      realKernel.stateCache = new Map();
+
+      log('Real kernel container set to: ' + realKernel.container);
+      log('Calling realKernel.applyVariables...');
+
+      try {
+        realKernel.applyVariables({ '--test-var': 'red' });
+        log('SUCCESS: Real kernel applyVariables worked!');
+      } catch (e) {
+        log('ERROR: ' + e.message);
+      }
+    }, 2000);
+  </script>
+</body>
+</html>

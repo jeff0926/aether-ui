@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Side-by-Side | EDS Leapfrog Demo</title>
+  <link rel="stylesheet" href="blocks/eds-blocks.css">
+
+  <!-- React for left panel -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Aether for right panel -->
+  <script src="../../dist/aether-kernel.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #1e1e1e; }
+
+    .header {
+      background: #2c2c2c;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .header-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .header-links a {
+      color: #999;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .header-links a:hover { color: white; }
+
+    .split-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: calc(100vh - 60px);
+    }
+
+    .panel {
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .panel-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0.75rem 1rem;
+      font-family: monospace;
+      font-size: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-left { background: #f5f5f5; border-right: 2px solid #333; }
+    .panel-right { background: #f5f5f5; }
+
+    .panel-left .panel-header {
+      background: linear-gradient(90deg, #d7373f, #b82e35);
+      color: white;
+    }
+
+    .panel-right .panel-header {
+      background: linear-gradient(90deg, #2d9d78, #238b68);
+      color: white;
+    }
+
+    .panel-label {
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .panel-stats {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .stat-label { opacity: 0.8; }
+    .stat-value { font-weight: 700; }
+
+    .panel-content {
+      padding: 1rem;
+    }
+
+    .alert-demo {
+      padding: 1rem;
+      border-radius: 8px;
+      background: var(--background-subtle, #e5f0ff);
+      border-left: 4px solid var(--accent-color, #1473e6);
+      margin-bottom: 1rem;
+      transition: all 0.3s;
+    }
+
+    .alert-demo h4 {
+      margin: 0 0 0.5rem;
+      color: var(--accent-color, #1473e6);
+      transition: color 0.3s;
+    }
+
+    .alert-demo p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #2c2c2c;
+    }
+
+    .alert-demo small {
+      display: block;
+      margin-top: 0.5rem;
+      color: #6e6e6e;
+      font-size: 0.75rem;
+    }
+
+    .activity-log {
+      background: #1e293b;
+      color: #22c55e;
+      padding: 0.75rem;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.7rem;
+      max-height: 120px;
+      overflow-y: auto;
+      margin-top: 1rem;
+    }
+
+    .activity-log div {
+      padding: 0.1rem 0;
+      border-bottom: 1px solid #334155;
+    }
+
+    .activity-log div:last-child { border-bottom: none; }
+
+    .divider {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: calc(100% - 60px);
+      background: #333;
+      z-index: 10;
+    }
+
+    .vs-badge {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #333;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      z-index: 20;
+    }
+
+    aether-runtime {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>Side-by-Side Comparison</h1>
+    <nav class="header-links">
+      <a href="index.html">Home</a>
+      <a href="adobe-way.html">Adobe Way</a>
+      <a href="aether-way.html">Aether Way</a>
+    </nav>
+  </header>
+
+  <div class="split-container">
+    <!-- Left Panel: React -->
+    <div class="panel panel-left">
+      <div class="panel-header">
+        <span class="panel-label">React + EDS</span>
+        <div class="panel-stats">
+          <div class="stat">
+            <span class="stat-label">JS:</span>
+            <span class="stat-value">~40KB</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Renders:</span>
+            <span class="stat-value" id="react-renders">0</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel-content" id="react-panel"></div>
+    </div>
+
+    <!-- VS Badge -->
+    <div class="vs-badge">VS</div>
+
+    <!-- Right Panel: Aether -->
+    <div class="panel panel-right">
+      <div class="panel-header">
+        <span class="panel-label">Aether</span>
+        <div class="panel-stats">
+          <div class="stat">
+            <span class="stat-label">JS:</span>
+            <span class="stat-value">2KB</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Updates:</span>
+            <span class="stat-value" id="aether-updates">0</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel-content">
+        <!-- Aether-possessed alert -->
+        <aether-runtime endpoint="/api/sse" namespace="eds-demo" id="aether-alert">
+          <div class="alert-demo">
+            <h4 data-aether-slot="alert-title">Waiting for SSE...</h4>
+            <p data-aether-slot="alert-body">Connecting to stream</p>
+            <small data-aether-slot="alert-time">--:--:--</small>
+          </div>
+        </aether-runtime>
+
+        <aether-runtime endpoint="/api/sse" namespace="weather-alert" id="aether-weather">
+          <div class="alert-demo">
+            <h4 data-aether-slot="alert-title">Weather Alert</h4>
+            <p data-aether-slot="alert-body">Connecting...</p>
+            <small data-aether-slot="alert-time">--:--:--</small>
+          </div>
+        </aether-runtime>
+
+        <div class="activity-log" id="aether-log">
+          <div>Aether kernel loaded (2KB)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Web Component -->
+  <script type="module" src="../../src/adapter/web-component.js"></script>
+
+  <!-- React Side -->
+  <script type="text/babel">
+    let reactRenderCount = 0;
+
+    function ReactAlert({ title, body, time, accentColor, bgColor }) {
+      reactRenderCount++;
+      document.getElementById('react-renders').textContent = reactRenderCount;
+
+      const style = {
+        '--accent-color': accentColor || '#1473e6',
+        '--background-subtle': bgColor || '#e5f0ff'
+      };
+
+      return (
+        <div className="alert-demo" style={style}>
+          <h4 style={{ color: accentColor || '#1473e6' }}>{title}</h4>
+          <p>{body}</p>
+          <small>{time}</small>
+        </div>
+      );
+    }
+
+    function ReactPanel() {
+      const [alerts, setAlerts] = React.useState([
+        { id: 1, title: 'Waiting for SSE...', body: 'Connecting to stream', time: '--:--:--', accentColor: '#1473e6', bgColor: '#e5f0ff' },
+        { id: 2, title: 'Weather Alert', body: 'Connecting...', time: '--:--:--', accentColor: '#f59e0b', bgColor: '#fef3e5' }
+      ]);
+      const [log, setLog] = React.useState(['React hydrated (40KB parsed)']);
+
+      React.useEffect(() => {
+        // Connect to same SSE streams as Aether
+        const sse1 = new EventSource('/api/sse?namespace=eds-demo');
+        const sse2 = new EventSource('/api/sse?namespace=weather-alert');
+
+        sse1.onmessage = (event) => {
+          const pulse = JSON.parse(event.data);
+          if (pulse.content) {
+            setAlerts(prev => prev.map((a, i) => i === 0 ? {
+              ...a,
+              title: pulse.content['alert-title'] || a.title,
+              body: pulse.content['alert-body'] || a.body,
+              time: pulse.content['alert-time'] || a.time,
+              accentColor: pulse.vars?.['--accent-color'] || a.accentColor,
+              bgColor: pulse.vars?.['--background-subtle'] || a.bgColor
+            } : a));
+            setLog(prev => [...prev.slice(-4), `SSE1: ${pulse.content['alert-title'] || 'update'}`]);
+          }
+        };
+
+        sse2.onmessage = (event) => {
+          const pulse = JSON.parse(event.data);
+          if (pulse.content) {
+            setAlerts(prev => prev.map((a, i) => i === 1 ? {
+              ...a,
+              title: pulse.content['alert-title'] || a.title,
+              body: pulse.content['alert-body'] || a.body,
+              time: pulse.content['alert-time'] || a.time,
+              accentColor: pulse.vars?.['--accent-color'] || a.accentColor,
+              bgColor: pulse.vars?.['--background-subtle'] || a.bgColor
+            } : a));
+            setLog(prev => [...prev.slice(-4), `SSE2: ${pulse.content['alert-title'] || 'update'}`]);
+          }
+        };
+
+        return () => {
+          sse1.close();
+          sse2.close();
+        };
+      }, []);
+
+      return (
+        <>
+          {alerts.map(alert => (
+            <ReactAlert key={alert.id} {...alert} />
+          ))}
+          <div className="activity-log">
+            {log.map((entry, i) => <div key={i}>{entry}</div>)}
+          </div>
+        </>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('react-panel'));
+    root.render(<ReactPanel />);
+  </script>
+
+  <!-- Aether Activity Logger -->
+  <script>
+    let aetherUpdates = 0;
+    const aetherLog = document.getElementById('aether-log');
+
+    // Watch for slot updates
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((m) => {
+        if (m.type === 'characterData' || m.type === 'childList') {
+          aetherUpdates++;
+          document.getElementById('aether-updates').textContent = aetherUpdates;
+
+          const target = m.target.parentElement || m.target;
+          const slot = target.dataset?.aetherSlot || 'content';
+          const entry = document.createElement('div');
+          entry.textContent = `Slot update: ${slot}`;
+          aetherLog.appendChild(entry);
+          aetherLog.scrollTop = aetherLog.scrollHeight;
+
+          // Keep log short
+          while (aetherLog.children.length > 6) {
+            aetherLog.removeChild(aetherLog.firstChild);
+          }
+        }
+      });
+    });
+
+    document.querySelectorAll('[data-aether-slot]').forEach(slot => {
+      observer.observe(slot, { characterData: true, childList: true, subtree: true });
+    });
+  </script>
+</body>
+</html>

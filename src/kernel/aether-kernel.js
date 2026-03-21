@@ -12,6 +12,13 @@ class AetherKernel {
     this.stateCache = new Map();
     this.focusPath = null;
     this.eventSource = null;
+    this.orchestrator = null;
+
+    // Connect to orchestrator if enabled
+    if (config.orchestrator && window.AetherOrchestrator) {
+      this.orchestrator = window.AetherOrchestrator.getInstance();
+      this.orchestrator.register(this.namespace, this);
+    }
 
     this.init();
   }
@@ -42,16 +49,19 @@ class AetherKernel {
     this.eventSource.onerror = () => {
       this.container.setAttribute('data-aether-error', 'true');
       this.container.removeAttribute('data-aether-connected');
-      // Auto-reconnect handled by browser
     };
   }
 
   handlePulse(pulse) {
-    // Phase: reflex | deliberation | complete | ghost
-
     if (pulse.vars) {
       this.applyVariables(pulse.vars);
       this.stateCache.set('vars', {...this.stateCache.get('vars'), ...pulse.vars});
+      // Broadcast shared vars to orchestrator
+      if (this.orchestrator && pulse.shared) {
+        Object.entries(pulse.vars).forEach(([k, v]) => {
+          this.orchestrator.setState(k, v);
+        });
+      }
     }
 
     if (pulse.content) {
@@ -64,7 +74,7 @@ class AetherKernel {
   }
 
   applyVariables(vars) {
-    const scope = this.container.shadowRoot || this.container;
+    const scope = this.container;
     Object.entries(vars).forEach(([key, value]) => {
       scope.style.setProperty(key, value);
     });
@@ -74,7 +84,7 @@ class AetherKernel {
     Object.entries(contentMap).forEach(([slot, text]) => {
       const el = this.container.querySelector(`[data-aether-slot="${slot}"]`);
       if (el) {
-        el.textContent = text; // XSS-safe
+        el.textContent = text;
       }
     });
   }
@@ -97,7 +107,6 @@ class AetherKernel {
   }
 
   generatePath(el) {
-    // Simple selector generation for focus restoration
     if (el.id) return `#${el.id}`;
     if (el.dataset.aetherSlot) return `[data-aether-slot="${el.dataset.aetherSlot}"]`;
     return el.tagName.toLowerCase();
@@ -108,24 +117,15 @@ class AetherKernel {
   }
 
   destroy() {
+    if (this.orchestrator) {
+      this.orchestrator.unregister(this.namespace);
+    }
     this.eventSource?.close();
     this.stateCache.clear();
   }
 }
 
-// Auto-initialize from DOM
-document.querySelectorAll('aether-runtime').forEach(el => {
-  const config = {
-    endpoint: el.getAttribute('endpoint'),
-    namespace: el.getAttribute('namespace')
-  };
-  el._aether = new AetherKernel(el, config);
-});
-
-// Expose globally for IIFE builds
-if (typeof window !== 'undefined') {
-  window.AetherKernel = AetherKernel;
-}
+window.AetherKernel = AetherKernel;
 
 export { AetherKernel };
 export default AetherKernel;

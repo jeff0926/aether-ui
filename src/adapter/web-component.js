@@ -4,7 +4,7 @@
  */
 
 class AetherRuntime extends HTMLElement {
-  static observedAttributes = ['endpoint', 'namespace', 'mood'];
+  static observedAttributes = ['endpoint', 'namespace', 'mood', 'orchestrator'];
 
   constructor() {
     super();
@@ -39,19 +39,18 @@ class AetherRuntime extends HTMLElement {
     const config = {
       endpoint: this.getAttribute('endpoint'),
       namespace: this.getAttribute('namespace'),
-      mood: this.getAttribute('mood')
+      mood: this.getAttribute('mood'),
+      orchestrator: this.hasAttribute('orchestrator')
     };
 
-    // Use host element as container so kernel can find slotted content
-    const container = this;
-
-    // Lazy load kernel if not present
+    // Pass host element as container (not shadow root)
+    // Kernel finds slotted content via container.querySelector
     if (!window.AetherKernel) {
       this.loadKernel().then(() => {
-        this._kernel = new window.AetherKernel(container, config);
+        this._kernel = new window.AetherKernel(this, config);
       });
     } else {
-      this._kernel = new window.AetherKernel(container, config);
+      this._kernel = new window.AetherKernel(this, config);
     }
   }
 

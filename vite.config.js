@@ -152,6 +152,36 @@ function mockSSEPlugin() {
           return;
         }
 
+        // EDS Demo namespace - for leapfrog demo
+        if (namespace === 'eds-demo') {
+          const updates = [
+            { title: 'System Healthy', body: 'All services operational', color: '#2d9d78', bg: '#e6f4ef' },
+            { title: 'New Deployment', body: 'Version 2.4.2 rolling out', color: '#1473e6', bg: '#e5f0ff' },
+            { title: 'Traffic Spike', body: 'Load balancer scaling up', color: '#e68619', bg: '#fef3e5' },
+            { title: 'Cache Cleared', body: 'CDN edge nodes refreshed', color: '#8b5cf6', bg: '#f3e8ff' }
+          ];
+
+          res.write(`data: ${JSON.stringify({
+            phase: 'reflex',
+            vars: { '--accent-color': '#1473e6', '--background-subtle': '#e5f0ff', '--tempo': '0.3s' },
+            content: { 'alert-title': 'EDS Demo Active', 'alert-body': 'Streaming updates...', 'alert-time': new Date().toLocaleTimeString() }
+          })}\n\n`);
+
+          let idx = 0;
+          const interval = setInterval(() => {
+            const update = updates[idx % updates.length];
+            res.write(`data: ${JSON.stringify({
+              phase: 'deliberation',
+              vars: { '--accent-color': update.color, '--background-subtle': update.bg },
+              content: { 'alert-title': update.title, 'alert-body': update.body, 'alert-time': new Date().toLocaleTimeString() }
+            })}\n\n`);
+            idx++;
+          }, 2500);
+
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
         // Weather namespace - for snap-in example
         res.write(`data: ${JSON.stringify({
           phase: 'reflex',

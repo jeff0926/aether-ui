@@ -95,11 +95,35 @@
       border-radius: 8px;
       font-family: monospace;
     }
+
+    /* Diagram styles */
+    .diagram-section {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .diagram-full {
+      max-width: 100%;
+      height: auto;
+    }
   </style>
 </head>
 <body>
   <h1>Snap-In Mode: React + Aether Coexistence</h1>
   <p class="subtitle">React manages the main app while Aether handles real-time alerts</p>
+
+  <!-- Architecture Comparison -->
+  <div class="diagram-section">
+    <img src="../diagrams/kernel-vs-react.svg" alt="React vs Aether comparison" class="diagram-full"/>
+  </div>
+
+  <!-- Adapter Modes -->
+  <div class="diagram-section">
+    <img src="../diagrams/adapter-modes.svg" alt="Adapter integration modes" class="diagram-full"/>
+  </div>
 
   <div class="container">
     <!-- Legacy React App -->
@@ -208,7 +232,7 @@
       document.getElementById('timing-output').innerHTML = `
         <strong>Timing Metrics:</strong><br>
         Aether snap-in mount: ${elapsed}ms<br>
-        Kernel size: 819 bytes (gzipped)<br>
+        Kernel size: 896 bytes (gzipped)<br>
         Target latency: &lt;50ms
       `;
     }, 5000);
