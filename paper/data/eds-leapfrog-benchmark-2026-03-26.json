@@ -1,0 +1,160 @@
+{
+  "benchmark": "EDS Leapfrog Performance Comparison",
+  "timestamp": "2026-03-26T13:53:32.697Z",
+  "environment": {
+    "type": "development",
+    "server": "Vite 5.4.21",
+    "browser": "Chromium (Playwright)",
+    "iterations": 10,
+    "waitStrategy": "domcontentloaded",
+    "notes": "Development server measurements include Vite HMR client (~134KB) on both pages"
+  },
+  "bundleSizes": {
+    "kernel": {
+      "file": "dist/aether-kernel.min.js",
+      "raw": 2208,
+      "gzipped": 868,
+      "unit": "bytes"
+    },
+    "orchestrator": {
+      "file": "dist/aether-orchestrator.min.js",
+      "raw": 837,
+      "gzipped": 414,
+      "unit": "bytes"
+    },
+    "total": {
+      "raw": 3045,
+      "gzipped": 1282,
+      "unit": "bytes"
+    }
+  },
+  "pages": {
+    "react": {
+      "name": "Adobe Way (React + EDS)",
+      "url": "/examples/eds-leapfrog/adobe-way.html",
+      "description": "React 18 + Babel + EDS blocks with hydration"
+    },
+    "aether": {
+      "name": "Aether Way (2KB Kernel)",
+      "url": "/examples/eds-leapfrog/aether-way.html",
+      "description": "Aether kernel possessing EDS blocks via SSE"
+    }
+  },
+  "results": {
+    "react": {
+      "firstContentfulPaint": {
+        "min": 1424,
+        "max": 1596,
+        "median": 1504,
+        "mean": 1503.20,
+        "p95": 1596,
+        "unit": "ms"
+      },
+      "domInteractive": {
+        "min": 1417.2,
+        "max": 1583,
+        "median": 1474.6,
+        "mean": 1482.65,
+        "p95": 1583,
+        "unit": "ms"
+      },
+      "domContentLoaded": {
+        "min": 1498,
+        "max": 1694,
+        "median": 1579,
+        "mean": 1579,
+        "p95": 1694,
+        "unit": "ms"
+      },
+      "jsPayload": {
+        "total": 142324,
+        "unit": "bytes",
+        "files": [
+          { "name": "client (Vite HMR)", "size": 134770 },
+          { "name": "react.development.js", "size": 0, "note": "CDN cached" },
+          { "name": "react-dom.development.js", "size": 0, "note": "CDN cached" },
+          { "name": "babel.min.js", "size": 0, "note": "CDN cached" },
+          { "name": "env.mjs", "size": 4220 }
+        ]
+      },
+      "pageAnalysis": {
+        "hasAetherRuntime": false,
+        "aetherConnected": false,
+        "aetherSlots": 0
+      }
+    },
+    "aether": {
+      "firstContentfulPaint": {
+        "min": 396,
+        "max": 440,
+        "median": 416,
+        "mean": 414.40,
+        "p95": 440,
+        "unit": "ms"
+      },
+      "domInteractive": {
+        "min": 327.6,
+        "max": 427.7,
+        "median": 402.1,
+        "mean": 388.95,
+        "p95": 427.7,
+        "unit": "ms"
+      },
+      "domContentLoaded": {
+        "min": 332,
+        "max": 432,
+        "median": 407,
+        "mean": 407,
+        "p95": 432,
+        "unit": "ms"
+      },
+      "jsPayload": {
+        "total": 167108,
+        "unit": "bytes",
+        "files": [
+          { "name": "client (Vite HMR)", "size": 134770 },
+          { "name": "aether-kernel.min.js", "size": 10860 },
+          { "name": "web-component.js", "size": 13340 },
+          { "name": "env.mjs", "size": 4220 }
+        ]
+      },
+      "pageAnalysis": {
+        "hasAetherRuntime": true,
+        "aetherConnected": true,
+        "aetherSlots": 7
+      }
+    }
+  },
+  "comparison": {
+    "firstContentfulPaint": {
+      "react": 1504,
+      "aether": 416,
+      "improvement": "3.6x faster",
+      "delta": 1088,
+      "unit": "ms"
+    },
+    "domInteractive": {
+      "react": 1475,
+      "aether": 402,
+      "improvement": "3.7x faster",
+      "delta": 1073,
+      "unit": "ms"
+    },
+    "bundleSize": {
+      "typicalReact": "80-200 KB (production)",
+      "aether": "1.28 KB (gzipped)",
+      "theoreticalImprovement": "62-156x smaller",
+      "note": "Dev server measurements include shared Vite overhead"
+    }
+  },
+  "conclusions": {
+    "fcpImprovement": "3.6x faster in development environment",
+    "kernelSize": "868 bytes gzipped (under 1KB target)",
+    "sseConnection": "Successful, 7 slots possessed",
+    "recommendations": [
+      "Production build benchmark would show true JS payload difference",
+      "CDN-cached React libraries inflate React page in production",
+      "Aether kernel size advantage most visible in production deploys"
+    ]
+  }
+}
