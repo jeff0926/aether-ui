@@ -31,15 +31,18 @@ The browser is not an application runtime. It is a **projection surface**.
 - **No reconciliation** — CSS variables handle state expression
 - **No framework tax** — 2KB total, not 40-200KB
 
-### Quantified Results
+### Quantified Results (Measured 2026-03-26)
 
 | Metric | React 18 | Aether UI | Improvement |
 |--------|----------|-----------|-------------|
-| JS Payload | 80-200 KB | 2 KB | **40-100x smaller** |
-| Time to Interactive | 200-600 ms | <50 ms | **4-12x faster** |
-| First Contentful Paint | 150-400 ms | <30 ms | **5-13x faster** |
-| Lighthouse Performance | 70-85 | 95-100 | **+15-30 points** |
+| Kernel Size (gzipped) | 80-200 KB | **868 B** | **92-230x smaller** |
+| Orchestrator (gzipped) | N/A | **414 B** | Optional add-on |
+| Total Aether (gzipped) | N/A | **1,282 B** | Under 1.5KB |
+| First Contentful Paint | 1,504 ms | 416 ms | **3.6x faster** |
+| DOM Interactive | 1,475 ms | 402 ms | **3.7x faster** |
 | Main Thread Blocking | Yes | No | **Non-blocking** |
+
+*Benchmark: 10 iterations, Playwright/Chromium, development server. See `paper/data/eds-leapfrog-benchmark-2026-03-26.json`*
 
 ---
 
@@ -274,7 +277,7 @@ Browser: kernel.applyVariables() + kernel.injectContent()
 
 ### 3.3 Kernel Implementation
 
-**Size Budget:** 2KB max (currently 896B gzipped)
+**Size Budget:** 2KB max | **Actual:** 2,208B raw / **868B gzipped**
 
 ```javascript
 class AetherKernel {
@@ -321,7 +324,7 @@ window.AetherKernel = AetherKernel;
 
 ### 3.4 Orchestrator Implementation
 
-**Size Budget:** 500B max (currently 442B gzipped)
+**Size Budget:** 500B max | **Actual:** 837B raw / **414B gzipped**
 
 ```javascript
 class AetherOrchestrator {
@@ -524,12 +527,13 @@ Aether maintains accessibility by:
 
 ### 6.1 Completed Components
 
-| Component | File | Size | Status |
-|-----------|------|------|--------|
-| AetherKernel | `src/kernel/aether-kernel.js` | 896B gzip | ✅ Production |
-| AetherOrchestrator | `src/kernel/aether-orchestrator.js` | 442B gzip | ✅ Production |
-| Web Component | `src/adapter/web-component.js` | - | ✅ Production |
-| AetherAdapter | `src/adapter/aether-adapter.js` | - | ✅ Production |
+| Component | File | Raw | Gzipped | Status |
+|-----------|------|-----|---------|--------|
+| AetherKernel | `src/kernel/aether-kernel.js` | 2,208 B | **868 B** | ✅ Production |
+| AetherOrchestrator | `src/kernel/aether-orchestrator.js` | 837 B | **414 B** | ✅ Production |
+| **Total Runtime** | — | 3,045 B | **1,282 B** | ✅ Production |
+| Web Component | `src/adapter/web-component.js` | — | — | ✅ Production |
+| AetherAdapter | `src/adapter/aether-adapter.js` | — | — | ✅ Production |
 
 ### 6.2 Working Examples
 
@@ -571,7 +575,50 @@ Complete demonstration comparing Aether to Adobe React+EDS pipeline:
 |------|------|--------|
 | LaTeX Source | `paper/main.tex` | Draft complete |
 | Figures | `paper/figures/` | Directory exists |
-| Data | `paper/data/` | Directory exists |
+| Data | `paper/data/` | Benchmark data added |
+
+### 6.6 Benchmark Results (Measured 2026-03-26)
+
+**Environment:**
+- Browser: Chromium (Playwright)
+- Server: Vite 5.4.21 development server
+- Iterations: 10 per page
+- Wait strategy: `domcontentloaded`
+
+**Bundle Sizes (Verified):**
+```
+┌─────────────────────┬──────────┬──────────┐
+│ Component           │ Raw      │ Gzipped  │
+├─────────────────────┼──────────┼──────────┤
+│ Kernel              │ 2,208 B  │ 868 B    │
+│ Orchestrator        │ 837 B    │ 414 B    │
+│ Total               │ 3,045 B  │ 1,282 B  │
+└─────────────────────┴──────────┴──────────┘
+```
+
+**EDS Leapfrog Performance Comparison:**
+```
+┌──────────────────────┬────────────────┬────────────────┬────────────────┐
+│ Metric               │ Adobe (React)  │ Aether         │ Improvement    │
+├──────────────────────┼────────────────┼────────────────┼────────────────┤
+│ First Contentful     │ 1,504 ms       │ 416 ms         │ 3.6x faster    │
+│ DOM Interactive      │ 1,475 ms       │ 402 ms         │ 3.7x faster    │
+│ DOM Content Loaded   │ 1,579 ms       │ 407 ms         │ 3.9x faster    │
+└──────────────────────┴────────────────┴────────────────┴────────────────┘
+```
+
+**Aether Runtime Verification:**
+- SSE Connection: ✅ Successful
+- Slots Possessed: 7
+- Connection Status: `data-aether-connected` attribute set
+
+**Data File:** `paper/data/eds-leapfrog-benchmark-2026-03-26.json`
+
+**Notes for Paper:**
+1. Development server includes ~134KB Vite HMR client on both pages (equal overhead)
+2. React CDN resources showed 0B transfer (cached) - production would differ
+3. The 3.6x FCP improvement is the primary empirical claim
+4. Kernel size (868B) is the primary bundle size claim
 
 ---
 
@@ -582,8 +629,8 @@ Complete demonstration comparing Aether to Adobe React+EDS pipeline:
 
 ### Abstract (150 words)
 - Problem: Framework tax (40-200KB, hydration latency)
-- Solution: Semantic projection via SSE to 2KB kernel
-- Results: 20x smaller, 12x faster TTI, 98+ Lighthouse
+- Solution: Semantic projection via SSE to 1.3KB kernel
+- Results: **868B gzipped kernel, 3.6x faster FCP** (measured)
 - Contribution: Dual-mode architecture (standalone + capsule)
 
 ### 1. Introduction
@@ -643,11 +690,11 @@ Complete demonstration comparing Aether to Adobe React+EDS pipeline:
 ### Primary Claims
 
 1. **The browser is a projection surface, not an application runtime.**
-   - Evidence: 2KB kernel vs 80-200KB React bundles
+   - Evidence: 868B kernel vs 80-200KB React bundles (92-230x smaller)
    - Implication: Fundamental paradigm shift
 
 2. **Hydration is an anti-pattern for agent-owned UI.**
-   - Evidence: <50ms TTI vs 200-600ms with React
+   - Evidence: 416ms FCP vs 1,504ms with React (3.6x faster, measured)
    - Implication: Remove the hydration step entirely
 
 3. **CSS variables are sufficient for state expression.**
