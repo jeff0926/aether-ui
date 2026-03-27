@@ -1,17 +1,14 @@
 # Aether UI
 
-**868-byte zero-hydration UI runtime. Project interfaces from agent intelligence.**
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Bundle Size](https://img.shields.io/badge/gzipped-868B-brightgreen.svg)](#bundle-size)
+**Zero-hydration UI projection for agent systems.**
 
 ---
 
 ## The Idea
 
-What if the browser didn't need to run your framework? What if it just... displayed what you sent it?
+What if UI rendering didn't happen in the browser at all?
 
-Aether UI inverts the traditional frontend paradigm. Instead of shipping JavaScript bundles to hydrate virtual DOM trees, we **project** pre-computed HTML slivers via Server-Sent Events to a minimal kernel.
+Aether UI is a projection-based execution model. The agent computes the UI. The browser displays it.
 
 ```
 Traditional:  Server → JS Bundle → Parse → Hydrate → VDOM → Reconcile → DOM
@@ -22,17 +19,104 @@ The browser is not an application runtime. It's a **projection surface**.
 
 ---
 
-## Measured Performance
+## What This Actually Changes
 
-Benchmarked against React 18 + EDS blocks (10 iterations, Playwright/Chromium):
+Aether is not a faster framework. It's a different execution model.
 
-| Metric | React 18 | Aether UI | Improvement |
-|--------|----------|-----------|-------------|
-| First Contentful Paint | 1,504 ms | 416 ms | **3.6x faster** |
-| DOM Interactive | 1,475 ms | 402 ms | **3.7x faster** |
-| Kernel Size (gzipped) | 80-200 KB | **868 B** | **92-230x smaller** |
+| Traditional Frameworks | Aether |
+|------------------------|--------|
+| Client computes UI | Agent computes UI |
+| Hydration required | No hydration |
+| Component lifecycle | No lifecycle |
+| Virtual DOM reconciliation | No reconciliation |
+| Client-side state for rendering | No client state |
+| Runtime in browser | No runtime (868B kernel) |
 
-*See `paper/data/eds-leapfrog-benchmark-2026-03-26.json` for full methodology.*
+> Aether does not optimize rendering. It eliminates it.
+
+This is a different execution model, not an optimization.
+
+---
+
+## Start Here (Flagship Demo)
+
+If you only look at one thing, look at this:
+
+```bash
+git clone https://github.com/jeff0926/aether-ui.git
+cd aether-ui && npm install && npm run dev
+```
+
+Open: **http://localhost:5173/examples/eds-leapfrog/side-by-side.html**
+
+This shows React and Aether rendering the same EDS blocks side-by-side, receiving the same SSE stream.
+
+---
+
+## Quick Start
+
+**1. Include the kernel:**
+```html
+<script src="dist/aether-kernel.min.js"></script>
+```
+
+**2. Add slots:**
+```html
+<aether-runtime endpoint="/api/sse" namespace="alerts">
+  <h3 data-aether-slot="title"></h3>
+  <p data-aether-slot="body"></p>
+</aether-runtime>
+
+<script type="module" src="src/adapter/web-component.js"></script>
+```
+
+**3. Stream from server:**
+```javascript
+{
+  "phase": "deliberation",
+  "vars": { "--accent-color": "#dc2626" },
+  "content": { "title": "Alert", "body": "Message here" }
+}
+```
+
+The kernel injects content into slots and applies CSS variables. Nothing else runs.
+
+---
+
+## How This Differs from LiveView / HTMX
+
+Aether is not server-rendered HTML synchronization. It's projection.
+
+| LiveView / HTMX | Aether |
+|-----------------|--------|
+| Server maintains DOM | No server-side DOM |
+| Diffs sent to client | No diffing |
+| Component tree on server | No component tree |
+| HTML fragments | CSS variables as state carrier |
+| Request-response | Agent cognition → phases |
+| Error = broken UI | Verification → ghost mode |
+
+The SSE message carries **phase** (reflex, deliberation, complete, ghost), **vars** (CSS properties), and **content** (slot text). The kernel applies them directly. No parsing. No diffing. No tree.
+
+This is projection, not synchronization.
+
+---
+
+## SSE Message Format
+
+```typescript
+interface Pulse {
+  phase: 'reflex' | 'deliberation' | 'complete' | 'ghost';
+  vars?: Record<string, string>;
+  content?: Record<string, string>;
+}
+```
+
+**Phases reflect agent cognition:**
+- `reflex` — immediate response
+- `deliberation` — thinking/processing
+- `complete` — final state
+- `ghost` — degraded/fallback
 
 ---
 
@@ -49,229 +133,75 @@ Benchmarked against React 18 + EDS blocks (10 iterations, Playwright/Chromium):
 └─────────────────────┴──────────┴──────────┘
 ```
 
-That's the entire runtime. No dependencies. No build step required.
+This is not a minified framework. This is the entire execution surface.
 
 ---
 
-## Quick Start
+## Preliminary Benchmarks (Development Environment)
 
-**1. Include the kernel (868 bytes gzipped):**
-```html
-<script src="https://unpkg.com/aether-ui/dist/aether-kernel.min.js"></script>
-```
+Measured against React 18 + EDS blocks. Development server, n=10, Playwright/Chromium.
 
-**2. Add a runtime with slots:**
-```html
-<aether-runtime endpoint="/api/sse" namespace="alerts">
-  <div class="alert">
-    <h3 data-aether-slot="title">Loading...</h3>
-    <p data-aether-slot="body"></p>
-  </div>
-</aether-runtime>
+| Metric | React 18 | Aether |
+|--------|----------|--------|
+| First Contentful Paint | 1,504 ms | 416 ms |
+| DOM Interactive | 1,475 ms | 402 ms |
+| Kernel Size (gzipped) | 80-200 KB | 868 B |
 
-<script type="module" src="https://unpkg.com/aether-ui/src/adapter/web-component.js"></script>
-```
-
-**3. Stream content from any SSE endpoint:**
-```javascript
-// Your server sends:
-{
-  "phase": "deliberation",
-  "vars": { "--accent-color": "#dc2626" },
-  "content": { "title": "Heat Warning", "body": "Temperature exceeding 95°F" }
-}
-```
-
-The kernel injects `content` into matching `data-aether-slot` elements and applies `vars` as CSS custom properties. That's it.
+These are preliminary measurements in a development environment. Production characteristics may differ. See `paper/data/eds-leapfrog-benchmark-2026-03-26.json` for methodology.
 
 ---
 
-## How It Works
+## Core Insight
 
-### The Kernel (868B)
+If the server can compute what the UI should be, the browser only needs to display it. No parsing. No compilation. No reconciliation. No state management. Just projection.
 
-Four responsibilities, nothing more:
+---
 
-1. **SSE Connection** — EventSource to your endpoint, auto-reconnect with backoff
-2. **CSS Injection** — `vars` applied via `element.style.setProperty()`
-3. **Slot Hydration** — `content` injected via `textContent` (XSS-safe)
-4. **Focus Preservation** — Saves/restores `activeElement` across updates
+## Dual-Mode Operation
 
-### The Orchestrator (+414B, optional)
+**Standalone:** Works with any SSE-capable backend (Node, Python, Go, Edge Functions).
 
-Multi-agent coordination for complex UIs:
+**Capsule Plugin:** Projection layer for Aether Capsule agents. Capsules own their UI. The host provides the surface.
 
 ```javascript
-const orchestrator = AetherOrchestrator.getInstance();
-orchestrator.register('weather', weatherKernel);
-orchestrator.register('traffic', trafficKernel);
-
-// Broadcast to all agents
-orchestrator.broadcast({ '--theme': 'dark' });
-
-// Share state across agents
-orchestrator.setState('user-location', { lat: 37.7749, lng: -122.4194 });
-```
-
----
-
-## Integration Modes
-
-### Snap-In (Coexist with React/Vue/Angular)
-```html
-<!-- Your existing React app -->
-<div id="react-root">...</div>
-
-<!-- Aether handles this part -->
-<aether-runtime endpoint="/api/notifications" namespace="alerts">
-  <div data-aether-slot="message"></div>
-</aether-runtime>
-```
-
-### Jump-In (Replace a component)
-```javascript
-const adapter = new AetherAdapter();
-adapter.jumpIn('react-dashboard', {
-  endpoint: '/api/sse',
-  namespace: 'dashboard',
-  transformer: (props) => ({ cpu: props.metrics.cpu })
-});
-```
-
-### Net-New (Pure Aether, no framework)
-```html
-<!DOCTYPE html>
-<html>
-<head>
-  <script src="aether-kernel.min.js"></script>
-</head>
-<body>
-  <aether-runtime endpoint="/api/sse" namespace="app">
-    <!-- Your entire UI here -->
-  </aether-runtime>
-</body>
-</html>
-```
-
----
-
-## Live Examples
-
-```bash
-git clone https://github.com/jeff0926/aether-ui.git
-cd aether-ui && npm install && npm run dev
-```
-
-Then open http://localhost:5173/examples/
-
-| Example | Mode | Description |
-|---------|------|-------------|
-| [weather/](examples/weather/) | Snap-In | React + Aether coexistence |
-| [jump-in/](examples/jump-in/) | Jump-In | Replace React component |
-| [net-new/](examples/net-new/) | Net-New | Pure Aether, no framework |
-| [dashboard/](examples/dashboard/) | Multi-Agent | Three agents sharing state |
-| [chat/](examples/chat/) | Streaming | Character-by-character SSE |
-| [eds-leapfrog/](examples/eds-leapfrog/) | **Flagship** | Adobe EDS comparison demo |
-
-### EDS Leapfrog Demo
-
-Our flagship demonstration compares Aether to Adobe's React+EDS pipeline:
-
-- **[Adobe Way](examples/eds-leapfrog/adobe-way.html)** — React 18 + Babel + EDS blocks
-- **[Aether Way](examples/eds-leapfrog/aether-way.html)** — 868B kernel + same EDS blocks
-- **[Side-by-Side](examples/eds-leapfrog/side-by-side.html)** — Split-screen comparison
-
-Same visual output. 3.6x faster. 92x smaller.
-
----
-
-## SSE Message Format
-
-```typescript
-interface Pulse {
-  phase: 'reflex' | 'deliberation' | 'complete' | 'ghost';
-  vars?: Record<string, string>;    // CSS custom properties
-  content?: Record<string, string>; // Slot content
-}
-```
-
-**Phases:**
-- `reflex` — Immediate response (fast transitions)
-- `deliberation` — Processing/thinking (medium transitions)
-- `complete` — Final state
-- `ghost` — Degraded/fallback mode
-
----
-
-## Dual-Mode Architecture
-
-Aether UI operates in two modes:
-
-### 1. Standalone
-Run independently with any SSE-capable backend (Node, Python, Go, Rust, Edge Functions).
-
-### 2. Capsule Plugin
-Integrate as the projection layer for [Aether Capsule](https://github.com/jeff0926/aether-capsule) agents:
-
-```javascript
-// Capsule manifest
 {
   "capsule": "weather-expert",
   "projection": {
     "type": "aether-ui",
     "endpoint": "/capsules/weather/sse",
-    "slots": ["condition", "temperature", "forecast"]
+    "slots": ["condition", "temperature"]
   }
 }
 ```
 
-Capsules own their UI. The host application just provides the projection surface.
+---
+
+## Examples
+
+| Example | Description |
+|---------|-------------|
+| [eds-leapfrog/](examples/eds-leapfrog/) | Flagship: React vs Aether comparison |
+| [weather/](examples/weather/) | Snap-in: coexist with React |
+| [dashboard/](examples/dashboard/) | Multi-agent orchestration |
+| [chat/](examples/chat/) | Streaming text |
+| [net-new/](examples/net-new/) | Pure Aether, no framework |
 
 ---
 
 ## Documentation
 
-| Document | Description |
-|----------|-------------|
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design, three-layer model |
-| [docs/API.md](docs/API.md) | Kernel, Orchestrator, Web Component API |
-| [docs/ADAPTER.md](docs/ADAPTER.md) | Framework integration modes |
-| [docs/EDGE.md](docs/EDGE.md) | Cloudflare Workers, Vercel Edge |
-| [docs/BENCHMARKS.md](docs/BENCHMARKS.md) | Performance methodology |
-| [docs/EDS.md](docs/EDS.md) | Adobe EDS integration |
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — Execution model
+- [docs/API.md](docs/API.md) — Kernel and Orchestrator
+- [docs/ADAPTER.md](docs/ADAPTER.md) — Integration modes
+- [docs/EDS.md](docs/EDS.md) — Design system integration
 
 ---
 
-## When to Use Aether
+## When to Use
 
-**Good fit:**
-- Real-time dashboards and monitoring
-- Live notifications and alerts
-- Streaming chat interfaces
-- Agent-owned UI projections
-- Performance-critical widgets
-- Edge-first applications
+**Good fit:** Real-time displays, agent UIs, dashboards, notifications, streaming interfaces.
 
-**Not a fit:**
-- Heavy form interactions (use React)
-- Complex client-side state machines
-- Offline-first applications
-- When you need React's ecosystem
-
----
-
-## Philosophy
-
-> "UI is not built. It is manifested from agent intelligence."
-
-Traditional frameworks exist because:
-1. Browsers couldn't efficiently update DOM
-2. Developers needed component abstractions
-3. State management required reconciliation
-
-Aether's insight: **If the server can pre-compute the final DOM state, none of these steps are necessary.**
-
-The browser just needs HTML. Aether gives it HTML.
+**Not a fit:** Heavy form interactions, complex client state machines, offline-first apps.
 
 ---
 
@@ -279,14 +209,7 @@ The browser just needs HTML. Aether gives it HTML.
 
 **Paper:** "Semantic Projection: Zero-Hydration UI for Agentic Systems"
 
-```
-paper/
-├── main.tex              # LaTeX source
-├── data/                 # Benchmark data
-└── figures/              # Architecture diagrams
-```
-
-*In preparation for arXiv submission, 2026.*
+In preparation. See `paper/main.tex`.
 
 ---
 
@@ -296,12 +219,6 @@ MIT
 
 ---
 
-## Contributing
-
-Issues and PRs welcome at [github.com/jeff0926/aether-ui](https://github.com/jeff0926/aether-ui).
-
----
-
 <p align="center">
-  <strong>868 bytes. Zero hydration. Infinite possibilities.</strong>
+  <em>The browser is a projection surface.</em>
 </p>
