@@ -33,7 +33,6 @@
       padding: 2rem;
     }
 
-    /* Header */
     header {
       text-align: center;
       padding: 3rem 2rem;
@@ -50,7 +49,7 @@
     header .tagline {
       font-size: 1.25rem;
       opacity: 0.9;
-      max-width: 600px;
+      max-width: 700px;
       margin: 0 auto;
     }
 
@@ -63,7 +62,6 @@
       font-size: 0.875rem;
     }
 
-    /* Stats Banner */
     .stats-banner {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -86,7 +84,6 @@
     }
 
     .stat-value.success { color: var(--success); }
-    .stat-value.warning { color: var(--warning); }
 
     .stat-label {
       color: var(--text-muted);
@@ -94,7 +91,6 @@
       margin-top: 0.25rem;
     }
 
-    /* Section */
     section {
       background: white;
       border-radius: 16px;
@@ -114,11 +110,8 @@
       gap: 0.5rem;
     }
 
-    section h2 .icon {
-      font-size: 1.25rem;
-    }
+    section h2 .icon { font-size: 1.25rem; }
 
-    /* Status Badge */
     .status {
       display: inline-flex;
       align-items: center;
@@ -130,43 +123,14 @@
       text-transform: uppercase;
     }
 
-    .status--complete {
-      background: #dcfce7;
-      color: #166534;
-    }
+    .status--complete { background: #dcfce7; color: #166534; }
+    .status--in-progress { background: #fef3c7; color: #92400e; }
+    .status--pending { background: #f1f5f9; color: #475569; }
+    .status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-    .status--in-progress {
-      background: #fef3c7;
-      color: #92400e;
-    }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
 
-    .status--pending {
-      background: #f1f5f9;
-      color: #475569;
-    }
-
-    .status::before {
-      content: '';
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: currentColor;
-    }
-
-    /* Grid Layouts */
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1rem;
-    }
-
-    /* Cards */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -175,43 +139,14 @@
       transition: transform 0.2s, box-shadow 0.2s;
     }
 
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px -5px rgb(0 0 0 / 0.1);
-    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px -5px rgb(0 0 0 / 0.1); }
+    .card h3 { font-size: 1rem; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .card p { color: var(--text-muted); font-size: 0.875rem; }
+    .card .meta { margin-top: 0.75rem; font-size: 0.75rem; color: var(--text-muted); font-family: monospace; }
 
-    .card h3 {
-      font-size: 1rem;
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+    a.card { text-decoration: none; color: inherit; display: block; }
+    a.card h3 { color: var(--primary); }
 
-    .card p {
-      color: var(--text-muted);
-      font-size: 0.875rem;
-    }
-
-    .card .meta {
-      margin-top: 0.75rem;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      font-family: monospace;
-    }
-
-    /* Link Card */
-    a.card {
-      text-decoration: none;
-      color: inherit;
-      display: block;
-    }
-
-    a.card h3 {
-      color: var(--primary);
-    }
-
-    /* Architecture Diagram */
     .architecture {
       background: #1a1a2e;
       border-radius: 12px;
@@ -224,98 +159,42 @@
       line-height: 1.4;
     }
 
-    .architecture .layer {
-      color: #60a5fa;
+    .architecture .layer { color: #60a5fa; }
+    .architecture .size { color: #4ade80; }
+    .architecture .arrow { color: #f59e0b; }
+
+    .execution-model {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin: 1.5rem 0;
     }
 
-    .architecture .size {
-      color: #4ade80;
+    .execution-model th, .execution-model td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
     }
 
-    .architecture .arrow {
-      color: #f59e0b;
-    }
+    .execution-model th { background: var(--surface); font-weight: 600; }
+    .execution-model .traditional { color: var(--text-muted); }
+    .execution-model .aether { color: var(--success); font-weight: 500; }
 
-    /* Timeline */
-    .timeline {
-      position: relative;
-      padding-left: 2rem;
-    }
-
-    .timeline::before {
-      content: '';
-      position: absolute;
-      left: 0.5rem;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: var(--border);
-    }
-
-    .timeline-item {
-      position: relative;
-      padding-bottom: 1.5rem;
-    }
-
-    .timeline-item::before {
-      content: '';
-      position: absolute;
-      left: -1.625rem;
-      top: 0.25rem;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--success);
-      border: 2px solid white;
-    }
-
-    .timeline-item.current::before {
-      background: var(--warning);
-      box-shadow: 0 0 0 4px rgba(230, 134, 25, 0.2);
-    }
-
-    .timeline-date {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-bottom: 0.25rem;
-    }
-
-    .timeline-title {
-      font-weight: 600;
-      margin-bottom: 0.25rem;
-    }
-
-    .timeline-desc {
-      font-size: 0.875rem;
-      color: var(--text-muted);
-    }
-
-    /* Comparison Table */
     .comparison-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 0.875rem;
     }
 
-    .comparison-table th,
-    .comparison-table td {
+    .comparison-table th, .comparison-table td {
       padding: 0.75rem 1rem;
       text-align: left;
       border-bottom: 1px solid var(--border);
     }
 
-    .comparison-table th {
-      background: var(--surface);
-      font-weight: 600;
-      color: var(--text);
-    }
-
+    .comparison-table th { background: var(--surface); font-weight: 600; color: var(--text); }
     .comparison-table .metric { color: var(--text-muted); }
-    .comparison-table .bad { color: var(--danger); }
-    .comparison-table .good { color: var(--success); font-weight: 600; }
-    .comparison-table .delta { color: var(--primary); font-weight: 700; }
 
-    /* Code Block */
     .code-block {
       background: #1e293b;
       border-radius: 8px;
@@ -331,7 +210,6 @@
     .code-block .comment { color: #64748b; }
     .code-block .property { color: #60a5fa; }
 
-    /* File Tree */
     .file-tree {
       font-family: monospace;
       font-size: 0.8rem;
@@ -344,7 +222,6 @@
     .file-tree .file { color: var(--text-muted); }
     .file-tree .highlight { color: var(--success); font-weight: 600; }
 
-    /* Footer */
     footer {
       text-align: center;
       padding: 2rem;
@@ -352,17 +229,9 @@
       font-size: 0.875rem;
     }
 
-    footer a {
-      color: white;
-    }
+    footer a { color: white; }
 
-    /* Live Demo Link */
-    .demo-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 1rem;
-    }
+    .demo-links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
 
     .demo-link {
       display: inline-flex;
@@ -378,25 +247,38 @@
       transition: background 0.2s;
     }
 
-    .demo-link:hover {
-      background: #1058b8;
+    .demo-link:hover { background: #1058b8; }
+    .demo-link.secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .demo-link.secondary:hover { background: var(--border); }
+
+    .insight-box {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border-left: 4px solid var(--primary);
+      padding: 1.5rem;
+      border-radius: 0 12px 12px 0;
+      margin: 1.5rem 0;
     }
 
-    .demo-link.secondary {
-      background: var(--surface);
+    .insight-box p {
+      font-size: 1.1rem;
       color: var(--text);
-      border: 1px solid var(--border);
+      font-style: italic;
     }
 
-    .demo-link.secondary:hover {
-      background: var(--border);
-    }
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before { content: ''; position: absolute; left: 0.5rem; top: 0; bottom: 0; width: 2px; background: var(--border); }
+    .timeline-item { position: relative; padding-bottom: 1.5rem; }
+    .timeline-item::before { content: ''; position: absolute; left: -1.625rem; top: 0.25rem; width: 10px; height: 10px; border-radius: 50%; background: var(--success); border: 2px solid white; }
+    .timeline-item.current::before { background: var(--warning); box-shadow: 0 0 0 4px rgba(230, 134, 25, 0.2); }
+    .timeline-date { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+    .timeline-title { font-weight: 600; margin-bottom: 0.25rem; }
+    .timeline-desc { font-size: 0.875rem; color: var(--text-muted); }
   </style>
 </head>
 <body>
   <header>
     <h1>Aether UI</h1>
-    <p class="tagline">Zero-Hydration Interface Framework for Agentic Systems</p>
+    <p class="tagline">Projection-based UI execution model for agent-driven systems</p>
     <span class="version">v0.2.0 &bull; March 2026</span>
   </header>
 
@@ -404,241 +286,249 @@
     <!-- Key Stats -->
     <div class="stats-banner">
       <div class="stat-card">
-        <div class="stat-value">2KB</div>
-        <div class="stat-label">Kernel Size (896B gzipped)</div>
+        <div class="stat-value">868B</div>
+        <div class="stat-label">Kernel (gzipped)</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value success">&lt;50ms</div>
-        <div class="stat-label">Time to Interactive</div>
+        <div class="stat-value success">Zero</div>
+        <div class="stat-label">Hydration Required</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">20x</div>
-        <div class="stat-label">Smaller than React</div>
+        <div class="stat-value">414B</div>
+        <div class="stat-label">Orchestrator (gzipped)</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value success">98+</div>
-        <div class="stat-label">Lighthouse Score</div>
+        <div class="stat-value success">1,282B</div>
+        <div class="stat-label">Total Runtime</div>
       </div>
     </div>
 
-    <!-- What We Built -->
+    <!-- The Idea -->
     <section>
-      <h2><span class="icon">&#128640;</span> What We Built</h2>
-      <p style="margin-bottom: 1.5rem; color: var(--text-muted);">
-        Aether UI inverts the traditional UI paradigm. Instead of shipping JavaScript bundles to hydrate virtual DOM trees,
-        we project pre-computed HTML slivers via Server-Sent Events to a minimal kernel. The browser becomes a projection surface, not an application runtime.
+      <h2><span class="icon">&#128161;</span> The Idea</h2>
+      <p style="margin-bottom: 1.5rem; color: var(--text-muted); font-size: 1.1rem;">
+        What if UI rendering didn't happen in the browser at all?
+      </p>
+      <p style="margin-bottom: 1.5rem;">
+        Aether UI introduces a projection-based execution model where the agent computes the interface and the browser simply displays it. This is not a faster framework. It is a different execution model.
       </p>
 
       <div class="architecture">
-<span class="layer">┌─────────────────────────────────────────────────────────────┐</span>
-<span class="layer">│                      EDGE LAYER                              │</span>
-<span class="layer">│     Intent Resolution → Sliver Lookup → SSE Streaming        │</span>
-<span class="layer">└─────────────────────────────┬───────────────────────────────┘</span>
-                              <span class="arrow">│ SSE</span>
-<span class="layer">┌─────────────────────────────▼───────────────────────────────┐</span>
-<span class="layer">│                     ADAPTER LAYER                            │</span>
-<span class="layer">│         Snap-In │ Jump-In │ Net-New Integration             │</span>
-<span class="layer">└─────────────────────────────┬───────────────────────────────┘</span>
-                              <span class="arrow">│ Events</span>
-<span class="layer">┌─────────────────────────────▼───────────────────────────────┐</span>
-<span class="layer">│                     KERNEL LAYER              </span><span class="size">[2KB total]</span><span class="layer">    │</span>
-<span class="layer">│   SSE Client │ CSS Injector │ Slot Hydrator │ Focus Mgmt   │</span>
-<span class="layer">└─────────────────────────────────────────────────────────────┘</span>
+<span class="layer">Traditional:</span>  Server → JS Bundle → Parse → Hydrate → VDOM → Reconcile → DOM
+
+<span class="layer">Aether:</span>       Agent  → Sliver    → SSE   → Kernel  → textContent        → DOM
+      </div>
+
+      <div class="insight-box">
+        <p>The browser is not an application runtime. It is a projection surface.</p>
+      </div>
+    </section>
+
+    <!-- What This Changes -->
+    <section>
+      <h2><span class="icon">&#9881;&#65039;</span> What This Actually Changes</h2>
+      <p style="margin-bottom: 1rem;">Aether eliminates the need for a client-side rendering engine.</p>
+
+      <table class="execution-model">
+        <thead>
+          <tr>
+            <th>Traditional Frameworks</th>
+            <th>Aether</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="traditional">Client computes UI</td>
+            <td class="aether">Agent computes UI</td>
+          </tr>
+          <tr>
+            <td class="traditional">Hydration required</td>
+            <td class="aether">No hydration</td>
+          </tr>
+          <tr>
+            <td class="traditional">Component lifecycle</td>
+            <td class="aether">No lifecycle</td>
+          </tr>
+          <tr>
+            <td class="traditional">Virtual DOM reconciliation</td>
+            <td class="aether">No structural reconciliation</td>
+          </tr>
+          <tr>
+            <td class="traditional">Client-side state for rendering</td>
+            <td class="aether">No client state for display</td>
+          </tr>
+          <tr>
+            <td class="traditional">Large runtime in browser</td>
+            <td class="aether">Minimal runtime (868B kernel)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="insight-box">
+        <p>Aether does not optimize rendering. It eliminates the need for a client-side rendering engine.</p>
+      </div>
+    </section>
+
+    <!-- Start Here -->
+    <section>
+      <h2><span class="icon">&#127942;</span> Start Here (Flagship Demo)</h2>
+      <p style="margin-bottom: 1.5rem;">If you only look at one thing, look at this:</p>
+
+      <div class="code-block" style="margin-bottom: 1.5rem;">
+<span class="comment"># Clone and run</span>
+git clone https://github.com/jeff0926/aether-ui.git
+<span class="keyword">cd</span> aether-ui && npm install && npm run dev
+
+<span class="comment"># Open the side-by-side comparison</span>
+http://localhost:5173/examples/eds-leapfrog/side-by-side.html
+      </div>
+
+      <p>This demonstrates:</p>
+      <ul style="margin: 1rem 0 1.5rem 1.5rem; color: var(--text-muted);">
+        <li>Identical UI (Adobe EDS blocks)</li>
+        <li>React vs Aether rendering</li>
+        <li>Hydration vs projection</li>
+        <li>Elimination of client-side execution</li>
+      </ul>
+
+      <div class="demo-links">
+        <a href="eds-leapfrog/side-by-side.html" class="demo-link">Open Side-by-Side Demo</a>
+        <a href="eds-leapfrog/" class="demo-link secondary">See All EDS Demos</a>
       </div>
     </section>
 
     <!-- Core Components -->
     <section>
-      <h2><span class="icon">&#9881;&#65039;</span> Core Components</h2>
+      <h2><span class="icon">&#128230;</span> Core Components</h2>
       <div class="grid-2">
         <div class="card">
-          <h3>
-            AetherKernel
-            <span class="status status--complete">Complete</span>
-          </h3>
-          <p>The 2KB runtime that handles SSE connections, CSS variable injection, slot content projection, and focus preservation.</p>
+          <h3>AetherKernel <span class="status status--complete">Complete</span></h3>
+          <p>Minimal runtime: SSE connection, CSS variable injection, slot content projection, focus preservation.</p>
           <div class="meta">
-            <strong>Size:</strong> 2,208 bytes raw &bull; 896 bytes gzipped<br>
+            <strong>Size:</strong> 2,208B raw &bull; 868B gzipped<br>
             <strong>File:</strong> src/kernel/aether-kernel.js
           </div>
         </div>
 
         <div class="card">
-          <h3>
-            AetherOrchestrator
-            <span class="status status--complete">Complete</span>
-          </h3>
-          <p>Multi-agent coordination hub for sharing state across Aether runtime instances. Singleton pattern with pub/sub.</p>
+          <h3>AetherOrchestrator <span class="status status--complete">Complete</span></h3>
+          <p>Multi-agent coordination. Enables capsules to share state across projections.</p>
           <div class="meta">
-            <strong>Size:</strong> 837 bytes raw &bull; 442 bytes gzipped<br>
+            <strong>Size:</strong> 837B raw &bull; 414B gzipped<br>
             <strong>File:</strong> src/kernel/aether-orchestrator.js
           </div>
         </div>
 
         <div class="card">
-          <h3>
-            Web Component
-            <span class="status status--complete">Complete</span>
-          </h3>
-          <p>Custom &lt;aether-runtime&gt; element for declarative usage. Handles endpoint, namespace, mood attributes.</p>
-          <div class="meta">
-            <strong>File:</strong> src/adapter/web-component.js
-          </div>
+          <h3>Web Component <span class="status status--complete">Complete</span></h3>
+          <p>Declarative &lt;aether-runtime&gt; element. Handles endpoint, namespace, phase attributes.</p>
+          <div class="meta"><strong>File:</strong> src/adapter/web-component.js</div>
         </div>
 
         <div class="card">
-          <h3>
-            AetherAdapter
-            <span class="status status--complete">Complete</span>
-          </h3>
-          <p>Integration layer for existing frameworks. Supports Snap-In (coexist), Jump-In (replace), and Net-New (pure) modes.</p>
-          <div class="meta">
-            <strong>File:</strong> src/adapter/aether-adapter.js
-          </div>
+          <h3>AetherAdapter <span class="status status--complete">Complete</span></h3>
+          <p>Integration layer: Snap-In (coexist), Jump-In (replace), Net-New (pure).</p>
+          <div class="meta"><strong>File:</strong> src/adapter/aether-adapter.js</div>
         </div>
       </div>
     </section>
 
-    <!-- Performance Comparison -->
+    <!-- Preliminary Benchmarks -->
     <section>
-      <h2><span class="icon">&#9889;</span> Performance Comparison</h2>
+      <h2><span class="icon">&#128202;</span> Preliminary Benchmarks (Development Environment)</h2>
+      <p style="margin-bottom: 1rem; color: var(--text-muted);">
+        Measured against React 18 + EDS blocks. Development server, n=10, Playwright/Chromium.
+      </p>
       <table class="comparison-table">
         <thead>
           <tr>
             <th>Metric</th>
             <th>React 18</th>
-            <th>A2UI</th>
-            <th>Aether UI</th>
-            <th>Improvement</th>
+            <th>Aether</th>
+            <th>Notes</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td class="metric">JavaScript Payload</td>
-            <td class="bad">80-200 KB</td>
-            <td>15-40 KB</td>
-            <td class="good">2 KB</td>
-            <td class="delta">40-100x smaller</td>
-          </tr>
-          <tr>
-            <td class="metric">Time to Interactive</td>
-            <td class="bad">200-600 ms</td>
-            <td>100-300 ms</td>
-            <td class="good">&lt;50 ms</td>
-            <td class="delta">4-12x faster</td>
+            <td class="metric">Runtime Size (gzipped)</td>
+            <td>80-200 KB</td>
+            <td>868 B</td>
+            <td>Kernel only</td>
           </tr>
           <tr>
             <td class="metric">First Contentful Paint</td>
-            <td class="bad">150-400 ms</td>
-            <td>100-250 ms</td>
-            <td class="good">&lt;30 ms</td>
-            <td class="delta">5-13x faster</td>
+            <td>1,504 ms</td>
+            <td>416 ms</td>
+            <td>Dev server</td>
           </tr>
           <tr>
-            <td class="metric">Lighthouse Performance</td>
-            <td class="bad">70-85</td>
-            <td>75-90</td>
-            <td class="good">95-100</td>
-            <td class="delta">+15-30 points</td>
-          </tr>
-          <tr>
-            <td class="metric">Main Thread Blocking</td>
-            <td class="bad">Yes (hydration)</td>
-            <td>Partial</td>
-            <td class="good">No</td>
-            <td class="delta">Non-blocking</td>
-          </tr>
-          <tr>
-            <td class="metric">Real-time Updates</td>
-            <td class="bad">Re-render cycle</td>
-            <td>State sync</td>
-            <td class="good">SSE streaming</td>
-            <td class="delta">Instant</td>
+            <td class="metric">DOM Interactive</td>
+            <td>1,475 ms</td>
+            <td>402 ms</td>
+            <td>Dev server</td>
           </tr>
         </tbody>
       </table>
+      <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted);">
+        These measurements illustrate the impact of eliminating hydration and client-side execution. Production characteristics may differ. See <code>paper/data/eds-leapfrog-benchmark-2026-03-26.json</code> for methodology.
+      </p>
     </section>
 
     <!-- Working Examples -->
     <section>
-      <h2><span class="icon">&#128187;</span> Working Examples</h2>
+      <h2><span class="icon">&#128187;</span> Examples</h2>
       <div class="grid-3">
+        <a href="eds-leapfrog/" class="card">
+          <h3>EDS Leapfrog (Flagship)</h3>
+          <p>React vs Aether comparison with identical Adobe EDS blocks.</p>
+          <div class="meta">/examples/eds-leapfrog/</div>
+        </a>
+
         <a href="weather/" class="card">
           <h3>Weather (Snap-In)</h3>
-          <p>Aether coexists with React. Weather alerts stream via SSE while React handles the rest.</p>
-          <div class="meta">Mode: Snap-In &bull; /examples/weather/</div>
-        </a>
-
-        <a href="jump-in/" class="card">
-          <h3>Dashboard (Jump-In)</h3>
-          <p>Aether replaces React for a dashboard component. Props transformed to Canonical Model.</p>
-          <div class="meta">Mode: Jump-In &bull; /examples/jump-in/</div>
-        </a>
-
-        <a href="net-new/" class="card">
-          <h3>Pure Aether (Net-New)</h3>
-          <p>No framework. Edge-native mode with pre-flight eligibility check.</p>
-          <div class="meta">Mode: Net-New &bull; /examples/net-new/</div>
+          <p>Aether coexists with React. Both render on same page.</p>
+          <div class="meta">Mode: Snap-In</div>
         </a>
 
         <a href="dashboard/" class="card">
           <h3>Multi-Agent Dashboard</h3>
-          <p>Three agents (Planner, Executor, Critic) sharing state via Orchestrator.</p>
-          <div class="meta">Feature: Orchestrator &bull; /examples/dashboard/</div>
+          <p>Three agents sharing state via Orchestrator.</p>
+          <div class="meta">Feature: Orchestrator</div>
         </a>
 
         <a href="chat/" class="card">
           <h3>Streaming Chat</h3>
-          <p>Character-by-character streaming via SSE. No React state management.</p>
-          <div class="meta">Feature: Streaming &bull; /examples/chat/</div>
+          <p>Character-by-character streaming via SSE.</p>
+          <div class="meta">Feature: Streaming</div>
         </a>
 
-        <a href="orchestrator-test.html" class="card">
-          <h3>Orchestrator Test</h3>
-          <p>Direct orchestrator API testing. State sharing between multiple runtimes.</p>
-          <div class="meta">Feature: State Sync &bull; /examples/orchestrator-test.html</div>
+        <a href="net-new/" class="card">
+          <h3>Pure Aether (Net-New)</h3>
+          <p>No framework. Agent-owned UI projection.</p>
+          <div class="meta">Mode: Net-New</div>
+        </a>
+
+        <a href="jump-in/" class="card">
+          <h3>Dashboard (Jump-In)</h3>
+          <p>Aether replaces React component.</p>
+          <div class="meta">Mode: Jump-In</div>
         </a>
       </div>
     </section>
 
-    <!-- EDS Leapfrog Demo -->
+    <!-- Dual-Mode -->
     <section>
-      <h2><span class="icon">&#127942;</span> EDS Leapfrog Demo (Flagship)</h2>
-      <p style="margin-bottom: 1.5rem; color: var(--text-muted);">
-        Our flagship demonstration: Aether achieves Adobe EDS-compliant output with 20x smaller payload and 12x faster TTI.
-        Same visual result, radically different architecture.
-      </p>
-
+      <h2><span class="icon">&#128256;</span> Dual-Mode Operation</h2>
       <div class="grid-2">
-        <a href="eds-leapfrog/" class="card">
-          <h3>Landing Page <span class="status status--complete">Complete</span></h3>
-          <p>Performance comparison table, architecture diagrams, and links to all demo variants.</p>
-        </a>
+        <div class="card">
+          <h3>Standalone</h3>
+          <p>Works with any SSE-capable backend: Node, Python, Go, Rust, Edge Functions. No framework dependency.</p>
+        </div>
 
-        <a href="eds-leapfrog/adobe-way.html" class="card">
-          <h3>Adobe Way <span class="status status--complete">Complete</span></h3>
-          <p>Traditional React 18 + EDS blocks. ~40KB JS payload, hydration overhead.</p>
-        </a>
-
-        <a href="eds-leapfrog/aether-way.html" class="card">
-          <h3>Aether Way <span class="status status--complete">Complete</span></h3>
-          <p>2KB kernel possessing EDS blocks via SSE. Zero hydration, instant updates.</p>
-        </a>
-
-        <a href="eds-leapfrog/side-by-side.html" class="card">
-          <h3>Side-by-Side <span class="status status--complete">Complete</span></h3>
-          <p>Split screen comparison. Same SSE data, different rendering pipelines.</p>
-        </a>
-
-        <a href="eds-leapfrog/blocks.html" class="card">
-          <h3>Block Library <span class="status status--complete">Complete</span></h3>
-          <p>All 5 EDS blocks with Aether possession. Card, Alert, Nav, Hero, Footer.</p>
-        </a>
-      </div>
-
-      <div class="demo-links">
-        <a href="eds-leapfrog/" class="demo-link">Launch EDS Demo</a>
-        <a href="eds-leapfrog/side-by-side.html" class="demo-link secondary">See Comparison</a>
+        <div class="card">
+          <h3>Capsule Plugin</h3>
+          <p>Projection layer for Aether Capsule agents. Capsules compute UI. The host provides the projection surface.</p>
+        </div>
       </div>
     </section>
 
@@ -648,162 +538,104 @@
       <div class="grid-3">
         <div class="card">
           <h3>ARCHITECTURE.md <span class="status status--complete">Complete</span></h3>
-          <p>System design, three-layer model, 4-step pipeline, kernel responsibilities.</p>
+          <p>Execution model, three-layer architecture, 4-step pipeline.</p>
         </div>
 
         <div class="card">
           <h3>API.md <span class="status status--complete">Complete</span></h3>
-          <p>Kernel, Orchestrator, Web Component, and Adapter API reference.</p>
+          <p>Kernel, Orchestrator, Web Component API reference.</p>
         </div>
 
         <div class="card">
           <h3>ADAPTER.md <span class="status status--complete">Complete</span></h3>
-          <p>Framework integration modes: Snap-In, Jump-In, Net-New deep dives.</p>
+          <p>Integration modes: Snap-In, Jump-In, Net-New.</p>
         </div>
 
         <div class="card">
           <h3>BENCHMARKS.md <span class="status status--complete">Complete</span></h3>
-          <p>Performance validation methodology and framework comparisons.</p>
+          <p>Measurement methodology and preliminary results.</p>
         </div>
 
         <div class="card">
           <h3>EDGE.md <span class="status status--complete">Complete</span></h3>
-          <p>Cloudflare Workers and Vercel Edge Functions deployment guides.</p>
+          <p>Cloudflare Workers and Vercel Edge deployment.</p>
         </div>
 
         <div class="card">
           <h3>EDS.md <span class="status status--complete">Complete</span></h3>
-          <p>Adobe Experience Design System integration and block mapping.</p>
+          <p>Adobe EDS integration and slot mapping.</p>
         </div>
       </div>
     </section>
 
-    <!-- arXiv Paper -->
+    <!-- Research Paper -->
     <section>
       <h2><span class="icon">&#128220;</span> Research Paper</h2>
       <div class="card" style="max-width: 600px;">
         <h3>Semantic Projection: Zero-Hydration UI for Agentic Systems</h3>
         <p style="margin-bottom: 1rem;">
-          Academic paper presenting the theoretical foundation and empirical validation of the Aether approach.
-          Covers the inversion paradigm, 4-step pipeline, and performance benchmarks.
+          Presents the projection-based execution model and its implications for agent-driven interfaces.
         </p>
         <div class="meta" style="margin-bottom: 1rem;">
-          <strong>Status:</strong> Draft complete &bull; <strong>Target:</strong> arXiv submission<br>
-          <strong>File:</strong> paper/main.tex (152 lines)
+          <strong>Status:</strong> Draft complete &bull; <strong>Target:</strong> arXiv<br>
+          <strong>File:</strong> paper/main.tex
         </div>
         <span class="status status--in-progress">Ready for Review</span>
       </div>
     </section>
 
-    <!-- Project Files -->
+    <!-- Project Structure -->
     <section>
       <h2><span class="icon">&#128193;</span> Project Structure</h2>
       <div class="file-tree">
 <span class="folder">aether-ui/</span>
 ├── <span class="folder">src/</span>
 │   ├── <span class="folder">kernel/</span>
-│   │   ├── <span class="highlight">aether-kernel.js</span>        <span style="color:#64748b"># 2KB core runtime</span>
-│   │   ├── <span class="highlight">aether-orchestrator.js</span>  <span style="color:#64748b"># Multi-agent coordination</span>
-│   │   └── <span class="folder">tests/</span>                   <span style="color:#64748b"># 11 passing tests</span>
+│   │   ├── <span class="highlight">aether-kernel.js</span>        <span style="color:#64748b"># 868B gzipped</span>
+│   │   └── <span class="highlight">aether-orchestrator.js</span>  <span style="color:#64748b"># 414B gzipped</span>
 │   └── <span class="folder">adapter/</span>
-│       ├── <span class="file">aether-adapter.js</span>        <span style="color:#64748b"># 3-mode integration</span>
+│       ├── <span class="file">aether-adapter.js</span>        <span style="color:#64748b"># Integration modes</span>
 │       └── <span class="file">web-component.js</span>         <span style="color:#64748b"># &lt;aether-runtime&gt;</span>
-├── <span class="folder">dist/</span>
-│   ├── <span class="highlight">aether-kernel.min.js</span>      <span style="color:#64748b"># 2,208B (896B gzip)</span>
-│   └── <span class="highlight">aether-orchestrator.min.js</span> <span style="color:#64748b"># 837B (442B gzip)</span>
+├── <span class="folder">dist/</span>                           <span style="color:#64748b"># Production builds</span>
 ├── <span class="folder">examples/</span>
-│   ├── <span class="folder">weather/</span>                   <span style="color:#64748b"># Snap-in mode</span>
-│   ├── <span class="folder">jump-in/</span>                   <span style="color:#64748b"># React replacement</span>
-│   ├── <span class="folder">net-new/</span>                   <span style="color:#64748b"># Pure Aether</span>
-│   ├── <span class="folder">dashboard/</span>                 <span style="color:#64748b"># Multi-agent</span>
-│   ├── <span class="folder">chat/</span>                      <span style="color:#64748b"># Streaming</span>
 │   ├── <span class="folder">eds-leapfrog/</span>              <span style="color:#64748b"># Flagship demo</span>
+│   ├── <span class="folder">weather/</span>                   <span style="color:#64748b"># Snap-in</span>
+│   ├── <span class="folder">dashboard/</span>                 <span style="color:#64748b"># Multi-agent</span>
 │   └── <span class="file">project-overview.html</span>     <span style="color:#64748b"># This page</span>
-├── <span class="folder">docs/</span>
-│   ├── <span class="file">ARCHITECTURE.md</span>
-│   ├── <span class="file">API.md</span>
-│   ├── <span class="file">ADAPTER.md</span>
-│   ├── <span class="file">BENCHMARKS.md</span>
-│   ├── <span class="file">EDGE.md</span>
-│   └── <span class="file">EDS.md</span>
+├── <span class="folder">docs/</span>                           <span style="color:#64748b"># Documentation</span>
 ├── <span class="folder">paper/</span>
-│   └── <span class="file">main.tex</span>                   <span style="color:#64748b"># arXiv submission</span>
-├── <span class="file">package.json</span>
-├── <span class="file">rollup.config.js</span>
-├── <span class="file">vite.config.js</span>
+│   ├── <span class="file">main.tex</span>                   <span style="color:#64748b"># arXiv submission</span>
+│   └── <span class="folder">data/</span>                      <span style="color:#64748b"># Benchmark data</span>
 └── <span class="file">README.md</span>
       </div>
     </section>
 
-    <!-- Development Timeline -->
+    <!-- Timeline -->
     <section>
       <h2><span class="icon">&#128197;</span> Development Timeline</h2>
       <div class="timeline">
         <div class="timeline-item">
           <div class="timeline-date">Day 1 (March 17, 2026)</div>
           <div class="timeline-title">Initial Implementation</div>
-          <div class="timeline-desc">
-            Core kernel, web component, adapter system, 5 example pages, documentation structure.
-          </div>
+          <div class="timeline-desc">Core kernel, web component, adapter system, example pages.</div>
         </div>
 
         <div class="timeline-item">
           <div class="timeline-date">Day 2 (March 18, 2026)</div>
-          <div class="timeline-title">Bug Fixes &amp; Orchestrator</div>
-          <div class="timeline-desc">
-            Fixed DOM update issues, IIFE build conflict, shadowRoot scope bug. Added orchestrator for multi-agent coordination.
-          </div>
+          <div class="timeline-title">Orchestrator &amp; Bug Fixes</div>
+          <div class="timeline-desc">Multi-agent coordination, IIFE build fix, scope resolution.</div>
         </div>
 
         <div class="timeline-item">
           <div class="timeline-date">Days 3-5 (March 19-21, 2026)</div>
           <div class="timeline-title">EDS Leapfrog Demo</div>
-          <div class="timeline-desc">
-            Complete flagship demo comparing Aether to Adobe React pipeline. 5 demo pages, EDS block library, comprehensive README.
-          </div>
+          <div class="timeline-desc">Flagship React vs Aether comparison with Adobe EDS blocks.</div>
         </div>
 
         <div class="timeline-item current">
-          <div class="timeline-date">Day 6+ (March 24, 2026)</div>
-          <div class="timeline-title">Launch Preparation</div>
-          <div class="timeline-desc">
-            Project overview, arXiv paper refinement, launch materials (HN, Twitter).
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Quick Start -->
-    <section>
-      <h2><span class="icon">&#9889;</span> Quick Start</h2>
-      <div class="code-block">
-<span class="comment"># Clone and install</span>
-git clone https://github.com/aether/ui.git
-<span class="keyword">cd</span> aether-ui && npm install
-
-<span class="comment"># Start dev server</span>
-npm run dev
-
-<span class="comment"># Build for production</span>
-npm run build
-
-<span class="comment"># Run tests</span>
-npm test
-      </div>
-
-      <div style="margin-top: 1.5rem;">
-        <h4 style="margin-bottom: 0.75rem;">Usage</h4>
-        <div class="code-block">
-<span class="comment">&lt;!-- Load kernel --&gt;</span>
-&lt;<span class="keyword">script</span> <span class="property">src</span>=<span class="string">"aether-kernel.min.js"</span>&gt;&lt;/<span class="keyword">script</span>&gt;
-
-<span class="comment">&lt;!-- Use web component --&gt;</span>
-&lt;<span class="keyword">aether-runtime</span>
-  <span class="property">endpoint</span>=<span class="string">"/api/sse"</span>
-  <span class="property">namespace</span>=<span class="string">"weather-alert"</span>&gt;
-  &lt;<span class="keyword">div</span> <span class="property">data-aether-slot</span>=<span class="string">"title"</span>&gt;&lt;/<span class="keyword">div</span>&gt;
-  &lt;<span class="keyword">div</span> <span class="property">data-aether-slot</span>=<span class="string">"body"</span>&gt;&lt;/<span class="keyword">div</span>&gt;
-&lt;/<span class="keyword">aether-runtime</span>&gt;
+          <div class="timeline-date">Day 6+ (March 26, 2026)</div>
+          <div class="timeline-title">Documentation &amp; Positioning</div>
+          <div class="timeline-desc">Execution model framing, benchmark data, paper preparation.</div>
         </div>
       </div>
     </section>
@@ -813,23 +645,23 @@ npm test
       <h2><span class="icon">&#127919;</span> Next Steps</h2>
       <div class="grid-2">
         <div class="card">
-          <h3>Launch Materials <span class="status status--pending">Pending</span></h3>
-          <p>HN "Show HN" post, Twitter thread, demo video script.</p>
+          <h3>arXiv Submission <span class="status status--in-progress">In Progress</span></h3>
+          <p>Paper refinement, figure generation, bibliography.</p>
         </div>
 
         <div class="card">
-          <h3>arXiv Submission <span class="status status--in-progress">In Progress</span></h3>
-          <p>Paper review, figure generation, bibliography completion.</p>
+          <h3>Launch Materials <span class="status status--pending">Pending</span></h3>
+          <p>HN post, demo video, positioning materials.</p>
         </div>
 
         <div class="card">
           <h3>npm Publish <span class="status status--pending">Pending</span></h3>
-          <p>Package preparation, documentation finalization, v0.2.0 release.</p>
+          <p>Package preparation, v0.2.0 release.</p>
         </div>
 
         <div class="card">
           <h3>Community Feedback <span class="status status--pending">Pending</span></h3>
-          <p>Share with 5-10 engineers, collect v0.3 roadmap input.</p>
+          <p>Share with engineers, gather v0.3 roadmap input.</p>
         </div>
       </div>
     </section>
@@ -837,13 +669,13 @@ npm test
 
   <footer>
     <p>
-      <strong>Aether UI</strong> &bull; Zero-Hydration Interface Framework<br>
-      <a href="https://github.com/aether/ui">GitHub</a> &bull;
+      <strong>Aether UI</strong> &bull; Projection-based UI for agent-driven systems<br>
+      <a href="https://github.com/jeff0926/aether-ui">GitHub</a> &bull;
       <a href="../docs/API.md">API Docs</a> &bull;
       <a href="../README.md">README</a>
     </p>
     <p style="margin-top: 0.5rem; opacity: 0.7;">
-      Built with semantic projection. No React harmed in the making.
+      The browser is a projection surface.
     </p>
   </footer>
 </body>
