@@ -4,9 +4,11 @@
 
 **Target:** Academic publication / arXiv submission
 
-**Key Thesis:** Aether UI is a zero-hydration interface projection system that operates in two modes:
-1. **Standalone Mode** — Independent runtime requiring only a 2KB kernel
-2. **Capsule Mode** — Plugin architecture for Aether Capsule agentic systems
+**Key Thesis:** Aether UI introduces a projection-based execution model for agent-driven systems. It eliminates the need for a client-side rendering engine by having the agent compute the UI and the browser simply display it.
+
+**Dual-Mode Operation:**
+1. **Standalone Mode** — Works with any SSE-capable backend
+2. **Capsule Mode** — Projection layer for Aether Capsule agents
 
 ---
 
@@ -14,35 +16,46 @@
 
 ### What Is Aether UI?
 
-Aether UI inverts the traditional frontend paradigm. Instead of shipping JavaScript bundles (40-200KB) to browsers that hydrate virtual DOM trees, reconcile state, and render at runtime, Aether **projects** pre-computed HTML slivers via Server-Sent Events to a minimal 2KB kernel.
+Aether UI is not a faster framework. It is a different execution model.
 
-**The Inversion:**
+Instead of shipping JavaScript to the browser to parse, hydrate, and reconcile a virtual DOM, Aether **projects** pre-computed UI state via Server-Sent Events to a minimal kernel (868 bytes gzipped).
+
+**The Execution Model:**
 ```
-Traditional: Server → JS Bundle → Parse → Hydrate → VDOM → Reconcile → DOM
-Aether:      Agent → Sliver → SSE → Kernel → textContent/CSS vars → DOM
+Traditional:  Server → JS Bundle → Parse → Hydrate → VDOM → Reconcile → DOM
+Aether:       Agent  → Sliver    → SSE   → Kernel  → textContent        → DOM
 ```
 
 ### Core Innovation
 
 The browser is not an application runtime. It is a **projection surface**.
 
-- **No virtual DOM** — Direct slot injection via `textContent`
-- **No hydration** — Content arrives pre-rendered
-- **No reconciliation** — CSS variables handle state expression
-- **No framework tax** — 2KB total, not 40-200KB
+> Aether does not optimize rendering. It eliminates the need for a client-side rendering engine.
 
-### Quantified Results (Measured 2026-03-26)
+| Traditional Frameworks | Aether |
+|------------------------|--------|
+| Client computes UI | Agent computes UI |
+| Hydration required | No hydration |
+| Component lifecycle | No lifecycle |
+| Virtual DOM reconciliation | No structural reconciliation |
+| Client-side state for rendering | No client state for display |
+| Large runtime in browser | Minimal runtime (868B kernel) |
 
-| Metric | React 18 | Aether UI | Improvement |
-|--------|----------|-----------|-------------|
-| Kernel Size (gzipped) | 80-200 KB | **868 B** | **92-230x smaller** |
-| Orchestrator (gzipped) | N/A | **414 B** | Optional add-on |
-| Total Aether (gzipped) | N/A | **1,282 B** | Under 1.5KB |
-| First Contentful Paint | 1,504 ms | 416 ms | **3.6x faster** |
-| DOM Interactive | 1,475 ms | 402 ms | **3.7x faster** |
-| Main Thread Blocking | Yes | No | **Non-blocking** |
+This is a different execution model, not an optimization.
 
-*Benchmark: 10 iterations, Playwright/Chromium, development server. See `paper/data/eds-leapfrog-benchmark-2026-03-26.json`*
+### Preliminary Measurements (Development Environment)
+
+| Metric | React 18 | Aether | Notes |
+|--------|----------|--------|-------|
+| Runtime Size (gzipped) | 80-200 KB | 868 B | Kernel only |
+| Orchestrator (gzipped) | N/A | 414 B | Optional |
+| Total Aether (gzipped) | N/A | 1,282 B | Full runtime |
+| First Contentful Paint | 1,504 ms | 416 ms | Dev server, n=10 |
+| DOM Interactive | 1,475 ms | 402 ms | Dev server, n=10 |
+
+These measurements illustrate the impact of eliminating hydration and client-side execution. Production characteristics may differ.
+
+*See `paper/data/eds-leapfrog-benchmark-2026-03-26.json` for methodology.*
 
 ---
 
@@ -393,6 +406,23 @@ data: {"phase":"reflex","vars":{"--accent":"#0ea5e9"},"content":{"title":"Hello"
 - Exponential backoff: 1s, 2s, 4s, 8s, max 30s
 - State cache enables snapshot replay on reconnect
 
+### 3.6 Differentiation from LiveView / HTMX
+
+Aether does not synchronize a DOM. It projects UI state.
+
+| LiveView / HTMX | Aether |
+|-----------------|--------|
+| Server maintains DOM | No server-side DOM |
+| Diffs sent to client | No diffing |
+| Component tree exists | No component tree |
+| HTML fragments | Slot content + CSS variables |
+| Request-response updates | Continuous projection via SSE |
+| UI unaware of system state | Agent cognition drives UI phases |
+
+**Key Distinction:** LiveView/HTMX synchronize server-rendered HTML with the client DOM. Aether projects computed UI state directly into pre-defined slots. No parsing, no diffing, no tree.
+
+This is projection, not synchronization.
+
 ---
 
 ## PART 4: INTEGRATION MODES
@@ -628,10 +658,11 @@ Complete demonstration comparing Aether to Adobe React+EDS pipeline:
 **"Semantic Projection: Zero-Hydration Interfaces for Agentic Systems"**
 
 ### Abstract (150 words)
-- Problem: Framework tax (40-200KB, hydration latency)
-- Solution: Semantic projection via SSE to 1.3KB kernel
-- Results: **868B gzipped kernel, 3.6x faster FCP** (measured)
-- Contribution: Dual-mode architecture (standalone + capsule)
+- Problem: Client-side rendering requires hydration, reconciliation, lifecycle management
+- Solution: Projection-based execution model where agent computes UI, browser displays it
+- Method: SSE streams UI state (phase, vars, content) to 868B kernel
+- Result: Eliminates need for client-side rendering engine
+- Contribution: Dual-mode architecture (standalone + capsule plugin)
 
 ### 1. Introduction
 - The hydration problem in modern web development
@@ -689,13 +720,17 @@ Complete demonstration comparing Aether to Adobe React+EDS pipeline:
 
 ### Primary Claims
 
-1. **The browser is a projection surface, not an application runtime.**
-   - Evidence: 868B kernel vs 80-200KB React bundles (92-230x smaller)
-   - Implication: Fundamental paradigm shift
+1. **Aether is a different execution model, not a faster framework.**
+   - Evidence: No hydration, no lifecycle, no reconciliation, no client state for display
+   - Implication: Eliminates the need for a client-side rendering engine
 
-2. **Hydration is an anti-pattern for agent-owned UI.**
-   - Evidence: 416ms FCP vs 1,504ms with React (3.6x faster, measured)
-   - Implication: Remove the hydration step entirely
+2. **The browser is a projection surface, not an application runtime.**
+   - Evidence: 868B kernel vs 80-200KB React runtimes
+   - Implication: Agent computes UI, browser displays it
+
+3. **If the server can compute the UI state, the browser does not need to reconstruct it.**
+   - Evidence: Preliminary measurements show FCP 416ms vs 1,504ms
+   - Implication: Elimination of client-side execution, not optimization of it
 
 3. **CSS variables are sufficient for state expression.**
    - Evidence: `--accent-color`, `--tempo` handle visual state
@@ -707,22 +742,25 @@ Complete demonstration comparing Aether to Adobe React+EDS pipeline:
 
 ### Differentiators from Related Work
 
-| Approach | Limitation | Aether Solution |
-|----------|------------|-----------------|
-| React RSC | Still hydrates on client | Zero hydration |
-| A2UI | Runtime JSON → UI generation | Pre-computed slivers |
-| CopilotKit | Framework-first (React required) | Framework-optional |
-| HTMX | Server renders full HTML | Slot-based delta projection |
+| Approach | Model | Aether Difference |
+|----------|-------|-------------------|
+| React RSC | Server render + client hydration | No hydration, no client runtime |
+| LiveView | Server DOM + client synchronization | No server DOM, projection not sync |
+| HTMX | Server HTML fragments + DOM swap | No diffing, slot-based projection |
+| A2UI | JSON spec → client generation | Pre-computed, no generation |
+| CopilotKit | React-first AI integration | Framework-optional, agent-owned UI |
+
+**Core distinction:** These approaches optimize or relocate rendering. Aether eliminates the rendering engine entirely.
 
 ### Quotable Statements
 
-> "UI is not built. It is manifested from agent intelligence."
+> "Aether does not optimize rendering. It eliminates the need for a client-side rendering engine."
 
-> "The browser doesn't need JavaScript to render. It needs HTML. Aether gives it HTML."
+> "If the server can compute the UI state, the browser does not need to reconstruct it."
 
-> "Hydration is the tax you pay for shipping a compiler to the browser."
+> "The browser is not an application runtime. It is a projection surface."
 
-> "2KB is not a constraint. It's the destination."
+> "This is projection, not synchronization."
 
 ---
 
