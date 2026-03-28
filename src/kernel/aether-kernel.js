@@ -53,6 +53,11 @@ class AetherKernel {
   }
 
   handlePulse(pulse) {
+    // Set phase attribute for CSS-only visual behavior
+    if (pulse.phase) {
+      this.container.setAttribute('data-phase', pulse.phase);
+    }
+
     if (pulse.vars) {
       this.applyVariables(pulse.vars);
       this.stateCache.set('vars', {...this.stateCache.get('vars'), ...pulse.vars});

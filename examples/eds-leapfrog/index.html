@@ -133,6 +133,45 @@
     </div>
   </section>
 
+  <!-- NO INTERPRETATION LAYER PROOF -->
+  <section style="background: #1e293b; padding: 2rem;">
+    <div style="max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; gap: 2rem; align-items: center; font-family: monospace;">
+      <!-- React Pipeline -->
+      <div style="text-align: center;">
+        <div style="color: #ef4444; font-weight: 700; font-size: 1.1rem; margin-bottom: 1rem;">React Pipeline</div>
+        <div style="color: #94a3b8; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
+          <span style="background: #334155; padding: 0.4rem 0.75rem; border-radius: 4px;">Agent</span>
+          <span style="color: #64748b;">→</span>
+          <span style="background: #334155; padding: 0.4rem 0.75rem; border-radius: 4px;">JSON</span>
+          <span style="color: #64748b;">→</span>
+          <span style="background: #7f1d1d; padding: 0.4rem 0.75rem; border-radius: 4px; color: #fca5a5;">React</span>
+          <span style="color: #64748b;">→</span>
+          <span style="background: #7f1d1d; padding: 0.4rem 0.75rem; border-radius: 4px; color: #fca5a5;">VDOM</span>
+          <span style="color: #64748b;">→</span>
+          <span style="background: #334155; padding: 0.4rem 0.75rem; border-radius: 4px;">UI</span>
+        </div>
+        <div style="color: #64748b; font-size: 0.75rem; margin-top: 0.75rem;">3 interpretation layers between agent and UI</div>
+      </div>
+
+      <!-- VS -->
+      <div style="background: #475569; color: white; padding: 0.75rem 1.5rem; border-radius: 24px; font-weight: 700; font-size: 1.1rem;">VS</div>
+
+      <!-- Aether Pipeline -->
+      <div style="text-align: center;">
+        <div style="color: #22c55e; font-weight: 700; font-size: 1.1rem; margin-bottom: 1rem;">Aether Pipeline</div>
+        <div style="color: #94a3b8; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+          <span style="background: #334155; padding: 0.4rem 0.75rem; border-radius: 4px;">Agent</span>
+          <span style="color: #64748b;">→</span>
+          <span style="background: #334155; padding: 0.4rem 0.75rem; border-radius: 4px;">UI</span>
+        </div>
+        <div style="color: #22c55e; font-size: 0.75rem; margin-top: 0.75rem;">Zero interpretation layers</div>
+      </div>
+    </div>
+    <p style="text-align: center; color: #64748b; font-size: 0.8rem; margin-top: 1.5rem; font-style: italic;">
+      What the agent sends = what the user sees. No JSON schemas, no component mapping, no VDOM.
+    </p>
+  </section>
+
   <!-- Comparison Table -->
   <section class="comparison-table">
     <h2>Performance Comparison</h2>

@@ -335,3 +335,176 @@
   0% { opacity: 0.7; }
   100% { opacity: 1; }
 }
+
+/* ============================================
+   PHASE BEHAVIOR (CSS-only, NO JS logic)
+   ============================================
+   Phases reflect system state:
+   - reflex: immediate response (fast/active)
+   - deliberation: processing (slower/thinking)
+   - complete: final state (stable)
+   - ghost: degraded or uncertain
+   ============================================ */
+
+/* REFLEX: Fast, active, immediate response */
+[data-phase="reflex"] {
+  --phase-tempo: 0.15s;
+  --phase-opacity: 1;
+}
+
+[data-phase="reflex"] [data-aether-slot] {
+  animation: phase-reflex 0.2s ease-out;
+}
+
+@keyframes phase-reflex {
+  0% { transform: translateX(-2px); opacity: 0.8; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+/* DELIBERATION: Processing, thinking, in-progress */
+[data-phase="deliberation"] {
+  --phase-tempo: 0.3s;
+  --phase-opacity: 1;
+}
+
+[data-phase="deliberation"] .eds-alert,
+[data-phase="deliberation"] .eds-card {
+  animation: phase-deliberation 1.5s ease-in-out infinite;
+}
+
+[data-phase="deliberation"]::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-color, var(--eds-primary)), transparent);
+  animation: phase-thinking-bar 1.5s ease-in-out infinite;
+}
+
+@keyframes phase-deliberation {
+  0%, 100% { box-shadow: var(--eds-shadow); }
+  50% { box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+}
+
+@keyframes phase-thinking-bar {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* COMPLETE: Stable, final state */
+[data-phase="complete"] {
+  --phase-tempo: 0.4s;
+  --phase-opacity: 1;
+}
+
+[data-phase="complete"] .eds-alert,
+[data-phase="complete"] .eds-card {
+  animation: phase-complete 0.3s ease-out;
+}
+
+[data-phase="complete"]::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background: var(--eds-success);
+  border-radius: 50%;
+  animation: phase-complete-dot 0.4s ease-out;
+}
+
+@keyframes phase-complete {
+  0% { transform: scale(0.98); }
+  50% { transform: scale(1.01); }
+  100% { transform: scale(1); }
+}
+
+@keyframes phase-complete-dot {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* GHOST: Degraded, uncertain, disconnected */
+[data-phase="ghost"] {
+  --phase-tempo: 0.5s;
+  --phase-opacity: 0.6;
+}
+
+[data-phase="ghost"] .eds-alert,
+[data-phase="ghost"] .eds-card {
+  opacity: var(--phase-opacity);
+  filter: grayscale(40%);
+  animation: phase-ghost 2s ease-in-out infinite;
+}
+
+[data-phase="ghost"] [data-aether-slot] {
+  color: var(--eds-text-muted);
+}
+
+[data-phase="ghost"]::after {
+  content: 'Reconnecting...';
+  position: absolute;
+  bottom: -1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: var(--eds-text-muted);
+  animation: phase-ghost-text 1s ease-in-out infinite alternate;
+}
+
+@keyframes phase-ghost {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes phase-ghost-text {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* Phase indicator badge (optional visual) */
+[data-phase]::before {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  font-size: 0.65rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 2px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 10;
+}
+
+[data-phase="reflex"]::before {
+  content: 'reflex';
+  background: var(--eds-primary);
+  color: white;
+}
+
+[data-phase="deliberation"]::before {
+  content: 'thinking';
+  background: var(--eds-warning);
+  color: white;
+}
+
+[data-phase="complete"]::before {
+  content: 'done';
+  background: var(--eds-success);
+  color: white;
+}
+
+[data-phase="ghost"]::before {
+  content: 'ghost';
+  background: var(--eds-secondary);
+  color: white;
+}
+
+/* Ensure phase containers have positioning context */
+[data-phase] {
+  position: relative;
+  overflow: visible;
+}

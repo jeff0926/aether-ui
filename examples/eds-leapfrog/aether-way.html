@@ -90,6 +90,24 @@
   </style>
 </head>
 <body>
+  <!-- Progressive Enhancement: Works without JavaScript -->
+  <noscript>
+    <style>
+      .noscript-banner {
+        background: #e6f4ef;
+        color: #2d9d78;
+        padding: 1rem 2rem;
+        text-align: center;
+        font-weight: 600;
+        border-bottom: 2px solid #2d9d78;
+      }
+    </style>
+    <div class="noscript-banner">
+      JavaScript is disabled. This page still works! All content is visible via semantic HTML.
+      Only live SSE updates are unavailable.
+    </div>
+  </noscript>
+
   <!-- Metrics Bar -->
   <div class="metrics-bar">
     <div class="metric">
@@ -97,8 +115,8 @@
       <span class="metric-value">2 KB</span>
     </div>
     <div class="metric">
-      <span class="metric-label">Time to Interactive:</span>
-      <span class="metric-value" id="tti-time">measuring...</span>
+      <span class="metric-label">Hydration:</span>
+      <span class="metric-value">0 ms (none)</span>
     </div>
     <div class="metric">
       <span class="metric-label">SSE Updates:</span>
@@ -130,14 +148,13 @@
     </div>
   </nav>
 
-  <!-- EDS Hero (Aether-possessed) -->
-  <section class="eds-hero" id="hero-container" style="--hero-bg-start: #2d9d78; --hero-bg-end: #238b68;">
+  <!-- EDS Hero (IDENTICAL to React version - same colors, same layout) -->
+  <section class="eds-hero" style="--hero-bg-start: #2d9d78; --hero-bg-end: #238b68;">
     <div class="eds-hero__content">
-      <p class="eds-hero__eyebrow" data-aether-slot="hero-eyebrow">Zero Hydration</p>
-      <h1 class="eds-hero__title" data-aether-slot="hero-title">Aether + EDS Blocks</h1>
-      <p class="eds-hero__subtitle" data-aether-slot="hero-subtitle">
-        This page uses Aether's 2KB kernel to possess EDS blocks. No React, no hydration, no main thread blocking.
-        SSE streams content directly into slots.
+      <p class="eds-hero__eyebrow">Zero Hydration</p>
+      <h1 class="eds-hero__title">Aether + EDS Blocks</h1>
+      <p class="eds-hero__subtitle">
+        This page uses Aether's 2KB kernel. Same UI as React version, but no hydration, no bundle parsing, no main thread blocking.
       </p>
       <div class="eds-hero__actions">
         <a href="adobe-way.html" class="eds-button eds-button--primary">Compare to React</a>
@@ -147,63 +164,63 @@
   </section>
 
   <div class="page-content">
-    <h2 class="section-title">Content Cards (Static EDS)</h2>
+    <!-- Content Cards (IDENTICAL to React version) -->
+    <h2 class="section-title">Content Cards</h2>
     <div class="cards-grid">
       <div class="eds-card">
-        <img class="eds-card__image" src="https://via.placeholder.com/400x200/2d9d78/ffffff?text=Zero+Hydration" alt="Zero Hydration">
+        <img class="eds-card__image" src="https://via.placeholder.com/400x200/1473e6/ffffff?text=Getting+Started" alt="Getting Started">
         <div class="eds-card__content">
-          <h3 class="eds-card__title">Zero Hydration</h3>
-          <p class="eds-card__description">No JavaScript parsing, no VDOM reconciliation, no event re-attachment. The browser is just a projection surface.</p>
+          <h3 class="eds-card__title">Getting Started</h3>
+          <p class="eds-card__description">Learn the basics of EDS components and how to integrate them with your React application.</p>
         </div>
       </div>
       <div class="eds-card">
-        <img class="eds-card__image" src="https://via.placeholder.com/400x200/1473e6/ffffff?text=SSE+Streaming" alt="SSE Streaming">
+        <img class="eds-card__image" src="https://via.placeholder.com/400x200/2d9d78/ffffff?text=Components" alt="Component Library">
         <div class="eds-card__content">
-          <h3 class="eds-card__title">SSE Streaming</h3>
-          <p class="eds-card__description">Real-time updates via Server-Sent Events. Content and CSS variables stream directly to possessed slots.</p>
+          <h3 class="eds-card__title">Component Library</h3>
+          <p class="eds-card__description">Explore the full range of EDS components available for building enterprise experiences.</p>
         </div>
       </div>
       <div class="eds-card">
-        <img class="eds-card__image" src="https://via.placeholder.com/400x200/e68619/ffffff?text=Edge+Native" alt="Edge Native">
+        <img class="eds-card__image" src="https://via.placeholder.com/400x200/e68619/ffffff?text=Tokens" alt="Design Tokens">
         <div class="eds-card__content">
-          <h3 class="eds-card__title">Edge Native</h3>
-          <p class="eds-card__description">Deploy to Cloudflare Workers or Vercel Edge Functions. Slivers generated at the edge, close to users.</p>
+          <h3 class="eds-card__title">Design Tokens</h3>
+          <p class="eds-card__description">Understand how to use design tokens for consistent styling across your application.</p>
         </div>
       </div>
     </div>
 
-    <h2 class="section-title">Live Alerts (Aether-Possessed)</h2>
+    <!-- Live Alerts (SSE Updates - matches React structure) -->
+    <h2 class="section-title">Live Alerts (SSE Updates)</h2>
     <div class="alerts-stack">
-      <!-- Alert 1: Connected to SSE -->
+      <!-- Alert 1: Connected to SSE (same as first React alert) -->
       <aether-runtime endpoint="/api/sse" namespace="eds-demo" id="alert-1">
         <div class="eds-alert eds-alert--info">
           <span class="eds-alert__icon">&#8505;&#65039;</span>
           <div class="eds-alert__content">
-            <h4 class="eds-alert__title" data-aether-slot="alert-title">Connecting...</h4>
-            <p class="eds-alert__message" data-aether-slot="alert-body">Waiting for SSE stream</p>
+            <h4 class="eds-alert__title" data-aether-slot="alert-title">System Update</h4>
+            <p class="eds-alert__message" data-aether-slot="alert-body">Scheduled maintenance tonight at 11pm PST.</p>
           </div>
         </div>
       </aether-runtime>
 
-      <!-- Alert 2: Static success -->
+      <!-- Alert 2: Static success (matches React) -->
       <div class="eds-alert eds-alert--success">
         <span class="eds-alert__icon">&#9989;</span>
         <div class="eds-alert__content">
-          <h4 class="eds-alert__title">Kernel Loaded</h4>
-          <p class="eds-alert__message">Aether kernel initialized in &lt;10ms. No hydration required.</p>
+          <h4 class="eds-alert__title">Deployment Complete</h4>
+          <p class="eds-alert__message">Version 2.4.1 has been successfully deployed.</p>
         </div>
       </div>
 
-      <!-- Alert 3: Connected to secondary SSE -->
-      <aether-runtime endpoint="/api/sse" namespace="weather-alert" id="alert-2">
-        <div class="eds-alert eds-alert--warning">
-          <span class="eds-alert__icon">&#9888;&#65039;</span>
-          <div class="eds-alert__content">
-            <h4 class="eds-alert__title" data-aether-slot="alert-title">Weather Stream</h4>
-            <p class="eds-alert__message" data-aether-slot="alert-body">Connecting to weather alerts...</p>
-          </div>
+      <!-- Alert 3: Static warning (matches React) -->
+      <div class="eds-alert eds-alert--warning">
+        <span class="eds-alert__icon">&#9888;&#65039;</span>
+        <div class="eds-alert__content">
+          <h4 class="eds-alert__title">Performance Notice</h4>
+          <p class="eds-alert__message">High traffic detected. Response times may be affected.</p>
         </div>
-      </aether-runtime>
+      </div>
     </div>
   </div>
 
@@ -214,7 +231,7 @@
         <h4>Performance</h4>
         <ul class="eds-footer__links">
           <li><span class="eds-footer__link">2KB kernel (gzipped: 896B)</span></li>
-          <li><span class="eds-footer__link">&lt;50ms TTI</span></li>
+          <li><span class="eds-footer__link">0ms hydration</span></li>
           <li><span class="eds-footer__link">Non-blocking updates</span></li>
         </ul>
       </div>
@@ -244,16 +261,8 @@
   <script type="module" src="../../src/adapter/web-component.js"></script>
 
   <script>
-    // Measure TTI
-    const startTime = performance.now();
+    // Track SSE updates (for metrics display only)
     let updateCount = 0;
-
-    window.addEventListener('load', () => {
-      const tti = (performance.now() - startTime).toFixed(0);
-      document.getElementById('tti-time').textContent = tti + ' ms';
-    });
-
-    // Track SSE updates
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.type === 'characterData' || mutation.type === 'childList') {
