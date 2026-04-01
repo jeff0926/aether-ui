@@ -383,6 +383,135 @@ function mockSSEPlugin() {
         }
 
         // ============================================
+        // SNAP-IN MODE: Aether widgets in React app
+        // ============================================
+        if (namespace === 'snapin-notifications') {
+          const notifications = [
+            { icon: '●', text: 'New user registered' },
+            { icon: '●', text: 'Order #4521 completed' },
+            { icon: '●', text: 'Payment received: $299' },
+            { icon: '●', text: 'Report generated' },
+            { icon: '●', text: 'Backup completed' },
+            { icon: '●', text: 'Cache cleared' }
+          ];
+          let idx = 0;
+
+          res.write(`data: ${JSON.stringify({
+            phase: 'reflex',
+            content: {
+              'icon-1': '●', 'notification-1': notifications[0].text,
+              'icon-2': '●', 'notification-2': notifications[1].text,
+              'icon-3': '●', 'notification-3': notifications[2].text
+            }
+          })}\n\n`);
+
+          const interval = setInterval(() => {
+            const n1 = notifications[(idx) % notifications.length];
+            const n2 = notifications[(idx + 1) % notifications.length];
+            const n3 = notifications[(idx + 2) % notifications.length];
+            res.write(`data: ${JSON.stringify({
+              phase: idx % 3 === 0 ? 'complete' : 'deliberation',
+              content: {
+                'icon-1': n1.icon, 'notification-1': n1.text,
+                'icon-2': n2.icon, 'notification-2': n2.text,
+                'icon-3': n3.icon, 'notification-3': n3.text
+              }
+            })}\n\n`);
+            idx++;
+          }, 3000);
+
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        if (namespace === 'snapin-status') {
+          const statuses = ['OK', 'OK', 'OK', 'WARN'];
+          res.write(`data: ${JSON.stringify({
+            phase: 'reflex',
+            content: { 'api-status': 'OK', 'db-status': 'OK', 'cache-status': 'OK', 'queue-status': 'OK' }
+          })}\n\n`);
+
+          const interval = setInterval(() => {
+            const pick = () => statuses[Math.floor(Math.random() * statuses.length)];
+            res.write(`data: ${JSON.stringify({
+              phase: 'complete',
+              content: { 'api-status': pick(), 'db-status': pick(), 'cache-status': pick(), 'queue-status': pick() }
+            })}\n\n`);
+          }, 4000);
+
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        if (namespace === 'snapin-metrics') {
+          res.write(`data: ${JSON.stringify({
+            phase: 'reflex',
+            content: { 'active-users': '0', 'requests-sec': '0', 'avg-latency': '0ms', 'error-rate': '0%' }
+          })}\n\n`);
+
+          const interval = setInterval(() => {
+            const users = 1200 + Math.floor(Math.random() * 300);
+            const requests = (8 + Math.random() * 4).toFixed(1);
+            const latency = Math.floor(30 + Math.random() * 40);
+            const errors = (Math.random() * 0.5).toFixed(2);
+            res.write(`data: ${JSON.stringify({
+              phase: 'complete',
+              content: {
+                'active-users': users.toLocaleString(),
+                'requests-sec': requests + 'k',
+                'avg-latency': latency + 'ms',
+                'error-rate': errors + '%'
+              }
+            })}\n\n`);
+          }, 2000);
+
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        if (namespace === 'snapin-activity') {
+          const activities = [
+            'User john@example.com logged in',
+            'New order #4521 placed',
+            'Payment processed: $299.00',
+            'Report Q1 generated',
+            'User sarah@company.io updated profile',
+            'Subscription renewed: Pro Plan',
+            'File uploaded: report.pdf',
+            'Settings changed by admin'
+          ];
+          let idx = 0;
+
+          const time = () => new Date().toLocaleTimeString().slice(0, 5);
+          res.write(`data: ${JSON.stringify({
+            phase: 'reflex',
+            content: {
+              'time-1': time(), 'activity-1': activities[0],
+              'time-2': time(), 'activity-2': activities[1],
+              'time-3': time(), 'activity-3': activities[2],
+              'time-4': time(), 'activity-4': activities[3]
+            }
+          })}\n\n`);
+
+          const interval = setInterval(() => {
+            const t = time();
+            res.write(`data: ${JSON.stringify({
+              phase: idx % 2 === 0 ? 'complete' : 'deliberation',
+              content: {
+                'time-1': t, 'activity-1': activities[(idx) % activities.length],
+                'time-2': t, 'activity-2': activities[(idx + 1) % activities.length],
+                'time-3': t, 'activity-3': activities[(idx + 2) % activities.length],
+                'time-4': t, 'activity-4': activities[(idx + 3) % activities.length]
+              }
+            })}\n\n`);
+            idx++;
+          }, 2500);
+
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        // ============================================
         // JUMP-IN MODE: Dashboard Demo
         // ============================================
         if (namespace === 'jumpin-stats') {

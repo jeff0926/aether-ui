@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snap-in Mode | Aether Widgets Inside React</title>
+  <!--
+    SNAP-IN MODE: Aether widgets coexist with React.
+
+    React handles: Navigation, forms, interactive components
+    Aether handles: Real-time widgets (notifications, live stats, feeds)
+
+    This is the gradual adoption path - add Aether to specific
+    parts without replacing your entire React app.
+  -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="../../dist/aether-kernel.min.js"></script>
+  <link rel="stylesheet" href="shared.css">
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    // ============================================
+    // REACT COMPONENTS (Interactive)
+    // ============================================
+
+    function Navigation({ currentPage, onNavigate }) {
+      const pages = ['Dashboard', 'Users', 'Settings'];
+      return (
+        <nav className="nav">
+          {pages.map(page => (
+            <button
+              key={page}
+              className={`nav-btn ${currentPage === page ? 'active' : ''}`}
+              onClick={() => onNavigate(page)}
+            >
+              {page}
+            </button>
+          ))}
+          <span className="nav-badge react-badge">React Navigation</span>
+        </nav>
+      );
+    }
+
+    function SearchBar({ onSearch }) {
+      const [query, setQuery] = useState('');
+      return (
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="search-input"
+          />
+          <button onClick={() => onSearch(query)} className="search-btn">
+            Search
+          </button>
+          <span className="component-badge react-badge">React Form</span>
+        </div>
+      );
+    }
+
+    function UserTable() {
+      const [sortBy, setSortBy] = useState('name');
+      const users = [
+        { id: 1, name: 'Alice Chen', role: 'Admin', status: 'Active' },
+        { id: 2, name: 'Bob Smith', role: 'Editor', status: 'Active' },
+        { id: 3, name: 'Carol White', role: 'Viewer', status: 'Inactive' },
+      ];
+
+      const sorted = [...users].sort((a, b) => a[sortBy].localeCompare(b[sortBy]));
+
+      return (
+        <div className="table-container">
+          <div className="table-header">
+            <h3>User Management</h3>
+            <span className="component-badge react-badge">React Table (Interactive)</span>
+          </div>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th onClick={() => setSortBy('name')} className={sortBy === 'name' ? 'sorted' : ''}>
+                  Name {sortBy === 'name' && '↓'}
+                </th>
+                <th onClick={() => setSortBy('role')} className={sortBy === 'role' ? 'sorted' : ''}>
+                  Role {sortBy === 'role' && '↓'}
+                </th>
+                <th onClick={() => setSortBy('status')} className={sortBy === 'status' ? 'sorted' : ''}>
+                  Status {sortBy === 'status' && '↓'}
+                </th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sorted.map(user => (
+                <tr key={user.id}>
+                  <td>{user.name}</td>
+                  <td>{user.role}</td>
+                  <td><span className={`status-pill ${user.status.toLowerCase()}`}>{user.status}</span></td>
+                  <td>
+                    <button className="action-btn">Edit</button>
+                    <button className="action-btn danger">Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+
+    // ============================================
+    // MAIN APP: React + Aether Coexistence
+    // ============================================
+
+    function App() {
+      const [currentPage, setCurrentPage] = useState('Dashboard');
+      const [searchResults, setSearchResults] = useState(null);
+
+      const handleSearch = (query) => {
+        if (query) {
+          setSearchResults(`Searching for: ${query}`);
+          setTimeout(() => setSearchResults(null), 2000);
+        }
+      };
+
+      return (
+        <div className="app">
+          {/* REACT: Navigation */}
+          <header className="app-header">
+            <h1>Admin Panel</h1>
+            <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
+          </header>
+
+          <div className="app-layout">
+            {/* LEFT SIDEBAR: Aether Real-time Widgets */}
+            <aside className="sidebar">
+              <div className="sidebar-section">
+                <h3>Live Notifications</h3>
+                <span className="component-badge aether-badge">Aether Widget</span>
+
+                {/* AETHER: Real-time notifications - no React state needed */}
+                <aether-runtime endpoint="/api/sse" namespace="snapin-notifications" class="aether-widget">
+                  <div className="notification-list">
+                    <div className="notification">
+                      <span className="notification-icon" data-aether-slot="icon-1">●</span>
+                      <span className="notification-text" data-aether-slot="notification-1">Loading...</span>
+                    </div>
+                    <div className="notification">
+                      <span className="notification-icon" data-aether-slot="icon-2">●</span>
+                      <span className="notification-text" data-aether-slot="notification-2">Loading...</span>
+                    </div>
+                    <div className="notification">
+                      <span className="notification-icon" data-aether-slot="icon-3">●</span>
+                      <span className="notification-text" data-aether-slot="notification-3">Loading...</span>
+                    </div>
+                  </div>
+                </aether-runtime>
+              </div>
+
+              <div className="sidebar-section">
+                <h3>System Status</h3>
+                <span className="component-badge aether-badge">Aether Widget</span>
+
+                {/* AETHER: Live system status */}
+                <aether-runtime endpoint="/api/sse" namespace="snapin-status" class="aether-widget">
+                  <div className="status-grid">
+                    <div className="status-item">
+                      <span className="status-label">API</span>
+                      <span className="status-value" data-aether-slot="api-status">--</span>
+                    </div>
+                    <div className="status-item">
+                      <span className="status-label">Database</span>
+                      <span className="status-value" data-aether-slot="db-status">--</span>
+                    </div>
+                    <div className="status-item">
+                      <span className="status-label">Cache</span>
+                      <span className="status-value" data-aether-slot="cache-status">--</span>
+                    </div>
+                    <div className="status-item">
+                      <span className="status-label">Queue</span>
+                      <span className="status-value" data-aether-slot="queue-status">--</span>
+                    </div>
+                  </div>
+                </aether-runtime>
+              </div>
+            </aside>
+
+            {/* MAIN CONTENT */}
+            <main className="main-content">
+              {/* REACT: Search */}
+              <SearchBar onSearch={handleSearch} />
+              {searchResults && <div className="search-feedback">{searchResults}</div>}
+
+              {/* REACT: Interactive Table */}
+              <UserTable />
+
+              {/* AETHER: Live Activity Feed */}
+              <div className="activity-container">
+                <div className="activity-header">
+                  <h3>Live Activity Feed</h3>
+                  <span className="component-badge aether-badge">Aether Widget</span>
+                </div>
+
+                <aether-runtime endpoint="/api/sse" namespace="snapin-activity" class="aether-widget">
+                  <div className="activity-feed">
+                    <div className="activity-item">
+                      <span className="activity-time" data-aether-slot="time-1">--:--</span>
+                      <span className="activity-text" data-aether-slot="activity-1">Loading...</span>
+                    </div>
+                    <div className="activity-item">
+                      <span className="activity-time" data-aether-slot="time-2">--:--</span>
+                      <span className="activity-text" data-aether-slot="activity-2">Loading...</span>
+                    </div>
+                    <div className="activity-item">
+                      <span className="activity-time" data-aether-slot="time-3">--:--</span>
+                      <span className="activity-text" data-aether-slot="activity-3">Loading...</span>
+                    </div>
+                    <div className="activity-item">
+                      <span className="activity-time" data-aether-slot="time-4">--:--</span>
+                      <span className="activity-text" data-aether-slot="activity-4">Loading...</span>
+                    </div>
+                  </div>
+                </aether-runtime>
+              </div>
+            </main>
+
+            {/* RIGHT SIDEBAR: Aether Live Metrics */}
+            <aside className="sidebar right">
+              <div className="sidebar-section">
+                <h3>Live Metrics</h3>
+                <span className="component-badge aether-badge">Aether Widget</span>
+
+                <aether-runtime endpoint="/api/sse" namespace="snapin-metrics" class="aether-widget">
+                  <div className="metrics-list">
+                    <div className="metric-row">
+                      <span className="metric-label">Active Users</span>
+                      <span className="metric-value" data-aether-slot="active-users">--</span>
+                    </div>
+                    <div className="metric-row">
+                      <span className="metric-label">Requests/sec</span>
+                      <span className="metric-value" data-aether-slot="requests-sec">--</span>
+                    </div>
+                    <div className="metric-row">
+                      <span className="metric-label">Avg Latency</span>
+                      <span className="metric-value" data-aether-slot="avg-latency">--</span>
+                    </div>
+                    <div className="metric-row">
+                      <span className="metric-label">Error Rate</span>
+                      <span className="metric-value" data-aether-slot="error-rate">--</span>
+                    </div>
+                  </div>
+                </aether-runtime>
+              </div>
+            </aside>
+          </div>
+
+          <footer className="app-footer">
+            <div className="footer-legend">
+              <span><span className="legend-dot react"></span> React (Interactive)</span>
+              <span><span className="legend-dot aether"></span> Aether (Real-time)</span>
+            </div>
+            <p>
+              <strong>Snap-in Mode:</strong> React handles navigation, forms, and tables.
+              Aether handles real-time notifications, status, and activity feeds.
+            </p>
+          </footer>
+        </div>
+      );
+    }
+
+    // Mount React app
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+
+  <!-- Aether web component adapter -->
+  <script type="module" src="../../src/adapter/web-component.js"></script>
+</body>
+</html>

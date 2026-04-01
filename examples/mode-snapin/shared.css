@@ -1,0 +1,560 @@
+/* ============================================
+   SNAP-IN MODE: React + Aether Coexistence
+   ============================================ */
+
+:root {
+  --primary: #1473e6;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --react-color: #61dafb;
+  --aether-color: #8b5cf6;
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --surface: #0f172a;
+  --card: #1e293b;
+  --border: #334155;
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--surface);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ============================================
+   APP LAYOUT
+   ============================================ */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.app-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr 220px;
+  flex: 1;
+  gap: 1px;
+  background: var(--border);
+}
+
+/* ============================================
+   NAVIGATION (React)
+   ============================================ */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-btn {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.nav-btn:hover {
+  border-color: var(--react-color);
+  color: var(--text);
+}
+
+.nav-btn.active {
+  background: var(--react-color);
+  border-color: var(--react-color);
+  color: #0f172a;
+  font-weight: 500;
+}
+
+.nav-badge {
+  margin-left: 1rem;
+}
+
+/* ============================================
+   SIDEBARS
+   ============================================ */
+.sidebar {
+  background: var(--surface);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sidebar.right {
+  border-left: 1px solid var(--border);
+}
+
+.sidebar-section {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 1rem;
+  position: relative;
+}
+
+.sidebar-section h3 {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
+.main-content {
+  background: var(--surface);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ============================================
+   SEARCH BAR (React)
+   ============================================ */
+.search-bar {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  position: relative;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--react-color);
+}
+
+.search-btn {
+  padding: 0.75rem 1.5rem;
+  background: var(--react-color);
+  border: none;
+  border-radius: var(--radius);
+  color: #0f172a;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.search-btn:hover {
+  opacity: 0.9;
+}
+
+.search-feedback {
+  padding: 0.75rem;
+  background: rgba(97, 218, 251, 0.1);
+  border: 1px solid var(--react-color);
+  border-radius: var(--radius);
+  color: var(--react-color);
+  font-size: 0.85rem;
+}
+
+/* ============================================
+   DATA TABLE (React)
+   ============================================ */
+.table-container {
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.table-header h3 {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table th {
+  background: rgba(0, 0, 0, 0.2);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.data-table th:hover {
+  color: var(--text);
+}
+
+.data-table th.sorted {
+  color: var(--react-color);
+}
+
+.data-table td {
+  font-size: 0.9rem;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-pill.active {
+  background: rgba(34, 197, 94, 0.2);
+  color: var(--success);
+}
+
+.status-pill.inactive {
+  background: rgba(148, 163, 184, 0.2);
+  color: var(--text-muted);
+}
+
+.action-btn {
+  padding: 0.3rem 0.6rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+  margin-right: 0.25rem;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  border-color: var(--text);
+  color: var(--text);
+}
+
+.action-btn.danger:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* ============================================
+   AETHER WIDGETS
+   ============================================ */
+.aether-widget {
+  display: block;
+}
+
+/* Notifications */
+.notification-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.notification {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.notification-icon {
+  color: var(--success);
+  font-size: 0.6rem;
+}
+
+.notification-text {
+  color: var(--text-muted);
+}
+
+/* Status Grid */
+.status-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.status-item {
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.status-label {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.status-value {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Metrics List */
+.metrics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.metric-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: 'SF Mono', monospace;
+}
+
+/* Activity Feed */
+.activity-container {
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.activity-header h3 {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.activity-feed {
+  padding: 0.5rem;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: 'SF Mono', monospace;
+  min-width: 60px;
+}
+
+.activity-text {
+  font-size: 0.85rem;
+}
+
+/* ============================================
+   COMPONENT BADGES
+   ============================================ */
+.component-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.react-badge {
+  background: rgba(97, 218, 251, 0.2);
+  color: var(--react-color);
+}
+
+.aether-badge {
+  background: rgba(139, 92, 246, 0.2);
+  color: var(--aether-color);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.app-footer {
+  padding: 1rem 1.5rem;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.footer-legend {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.footer-legend span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.legend-dot.react {
+  background: var(--react-color);
+}
+
+.legend-dot.aether {
+  background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+}
+
+.app-footer p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.app-footer strong {
+  color: var(--text);
+}
+
+/* ============================================
+   AETHER PHASE BEHAVIOR
+   ============================================ */
+[data-phase="reflex"] .notification,
+[data-phase="reflex"] .status-item,
+[data-phase="reflex"] .metric-row,
+[data-phase="reflex"] .activity-item {
+  animation: item-reflex 0.15s ease-out;
+}
+
+@keyframes item-reflex {
+  0% { opacity: 0.7; transform: translateX(-4px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+[data-phase="deliberation"] .aether-widget {
+  position: relative;
+}
+
+[data-phase="deliberation"] .aether-widget::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--aether-color), transparent);
+  animation: thinking-bar 1.5s ease-in-out infinite;
+}
+
+@keyframes thinking-bar {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+[data-phase="complete"] .notification,
+[data-phase="complete"] .activity-item {
+  animation: item-complete 0.2s ease-out;
+}
+
+@keyframes item-complete {
+  0% { transform: scale(0.98); }
+  50% { transform: scale(1.01); }
+  100% { transform: scale(1); }
+}
+
+/* Phase badge */
+aether-runtime {
+  display: block;
+  position: relative;
+}
+
+aether-runtime::before {
+  content: attr(data-phase);
+  position: absolute;
+  top: -6px;
+  right: 4px;
+  font-size: 0.55rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  z-index: 10;
+  font-family: monospace;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+aether-runtime[data-phase="reflex"]::before { color: var(--primary); border-color: var(--primary); }
+aether-runtime[data-phase="deliberation"]::before { color: var(--warning); border-color: var(--warning); }
+aether-runtime[data-phase="complete"]::before { color: var(--success); border-color: var(--success); }

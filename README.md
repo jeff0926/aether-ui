@@ -188,7 +188,8 @@ Every demo includes `<noscript>` notices proving this.
 | Example | Path | Description |
 |---------|------|-------------|
 | **Jump-in Mode** | `/examples/mode-jumpin/` | **The "aha" demo: 50ms content vs 1500ms** |
-| **React Replacement** | `/examples/react-replacement/` | Proves: A real React app does not need React |
+| **Snap-in Mode** | `/examples/mode-snapin/` | Aether widgets inside a React app |
+| **Replace Mode** | `/examples/react-replacement/` | Full React replacement |
 | **EDS Leapfrog** | `/examples/eds-leapfrog/` | React vs Aether side-by-side |
 | **Alerts** | `/examples/ui/alert.html` | Status notifications |
 | **Metrics** | `/examples/ui/metrics.html` | Live telemetry dashboard |
@@ -219,9 +220,18 @@ Remove React entirely. Use Aether for content-driven UIs.
 
 **Demo:** `/examples/react-replacement/`
 
-### 3. Snap-in Mode
+### 3. Snap-in Mode (Most Practical)
 
-Aether components coexist with React on the same page. Gradual adoption path.
+Aether widgets coexist with React on the same page. The realistic adoption path.
+
+```
+React handles:  Navigation, forms, tables (interactive)
+Aether handles: Notifications, live stats, activity feeds (real-time)
+```
+
+Low risk. Prove value on one widget before committing.
+
+**Demo:** `/examples/mode-snapin/`
 
 ---
 
