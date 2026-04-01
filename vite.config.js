@@ -383,6 +383,103 @@ function mockSSEPlugin() {
         }
 
         // ============================================
+        // JUMP-IN MODE: Dashboard Demo
+        // ============================================
+        if (namespace === 'jumpin-stats') {
+          // Send initial content FAST - this is what makes jump-in work
+          res.write(`data: ${JSON.stringify({
+            phase: 'reflex',
+            content: {
+              'users': '24,521',
+              'users-trend': '↑ 12%',
+              'revenue': '$142,847',
+              'revenue-trend': '↑ 8%',
+              'orders': '1,847',
+              'orders-trend': '↓ 3%',
+              'conversion': '3.2%',
+              'conversion-trend': '↑ 5%'
+            }
+          })}\n\n`);
+
+          // Continue with live updates
+          const interval = setInterval(() => {
+            const users = 24000 + Math.floor(Math.random() * 1000);
+            const revenue = 140000 + Math.floor(Math.random() * 5000);
+            const orders = 1800 + Math.floor(Math.random() * 100);
+            const conversion = (3 + Math.random() * 0.5).toFixed(1);
+            res.write(`data: ${JSON.stringify({
+              phase: 'complete',
+              content: {
+                'users': users.toLocaleString(),
+                'users-trend': '↑ 12%',
+                'revenue': '$' + revenue.toLocaleString(),
+                'revenue-trend': '↑ 8%',
+                'orders': orders.toLocaleString(),
+                'orders-trend': '↓ 3%',
+                'conversion': conversion + '%',
+                'conversion-trend': '↑ 5%'
+              }
+            })}\n\n`);
+          }, 3000);
+
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        if (namespace === 'jumpin-activity') {
+          const activities = [
+            { action: 'New order placed', user: 'john@example.com' },
+            { action: 'Payment received', user: 'sarah@company.io' },
+            { action: 'User signed up', user: 'mike@startup.co' },
+            { action: 'Subscription renewed', user: 'lisa@agency.com' },
+            { action: 'Review submitted', user: 'alex@design.io' }
+          ];
+
+          // Send initial content FAST
+          const time = new Date().toLocaleTimeString();
+          res.write(`data: ${JSON.stringify({
+            phase: 'reflex',
+            content: {
+              'activity-1-action': activities[0].action,
+              'activity-1-user': activities[0].user,
+              'activity-1-time': time,
+              'activity-2-action': activities[1].action,
+              'activity-2-user': activities[1].user,
+              'activity-2-time': time,
+              'activity-3-action': activities[2].action,
+              'activity-3-user': activities[2].user,
+              'activity-3-time': time
+            }
+          })}\n\n`);
+
+          let idx = 0;
+          const interval = setInterval(() => {
+            const t = new Date().toLocaleTimeString();
+            const a1 = activities[(idx) % activities.length];
+            const a2 = activities[(idx + 1) % activities.length];
+            const a3 = activities[(idx + 2) % activities.length];
+            res.write(`data: ${JSON.stringify({
+              phase: 'complete',
+              content: {
+                'activity-1-action': a1.action,
+                'activity-1-user': a1.user,
+                'activity-1-time': t,
+                'activity-2-action': a2.action,
+                'activity-2-user': a2.user,
+                'activity-2-time': t,
+                'activity-3-action': a3.action,
+                'activity-3-user': a3.user,
+                'activity-3-time': t
+              }
+            })}\n\n`);
+            idx++;
+          }, 4000);
+
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        // ============================================
         // WS2: REACT REPLACEMENT - SERVICE MONITOR
         // ============================================
         if (namespace === 'monitor-status') {
@@ -506,6 +603,25 @@ function mockSSEPlugin() {
       server.middlewares.use('/check', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ eligible: true, config: {} }));
+      });
+
+      // ============================================
+      // JUMP-IN MODE: REST API for React dashboard
+      // ============================================
+      server.middlewares.use('/api/dashboard', (req, res) => {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        const data = {
+          users: (24000 + Math.floor(Math.random() * 1000)).toLocaleString(),
+          revenue: '$' + (140000 + Math.floor(Math.random() * 5000)).toLocaleString(),
+          orders: (1800 + Math.floor(Math.random() * 100)).toLocaleString(),
+          conversion: (3 + Math.random() * 0.5).toFixed(1) + '%',
+          activities: [
+            { action: 'New order placed', user: 'john@example.com', time: new Date().toLocaleTimeString() },
+            { action: 'Payment received', user: 'sarah@company.io', time: new Date().toLocaleTimeString() },
+            { action: 'User signed up', user: 'mike@startup.co', time: new Date().toLocaleTimeString() }
+          ]
+        };
+        res.end(JSON.stringify(data));
       });
 
       // ============================================

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jump-in Mode | Aether vs React Hydration</title>
+  <style>
+    :root {
+      --surface: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #1473e6;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--surface);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .page-header {
+      text-align: center;
+      padding: 2.5rem 2rem 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .page-header h1 {
+      font-size: 2.25rem;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #f8fafc, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page-header p {
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .page-header .highlight {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    /* The Big Idea */
+    .concept-box {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: var(--card);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .concept-box h2 {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .timeline-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .timeline {
+      padding: 1.5rem;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .timeline h3 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .timeline.react h3 { color: #61dafb; }
+    .timeline.aether h3 { color: var(--success); }
+
+    .timeline-events {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .timeline-event {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      padding: 0.5rem;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .timeline-event .time {
+      font-family: 'SF Mono', monospace;
+      font-weight: 600;
+      min-width: 70px;
+    }
+
+    .timeline.react .time { color: var(--warning); }
+    .timeline.aether .time { color: var(--success); }
+
+    .timeline-event .event {
+      color: var(--text-muted);
+    }
+
+    .timeline-event.content-visible {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .timeline-event.content-visible .event {
+      color: var(--success);
+      font-weight: 500;
+    }
+
+    /* Key Insight */
+    .insight {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(6, 182, 212, 0.1));
+      border-radius: 12px;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      text-align: center;
+    }
+
+    .insight p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    .insight strong {
+      color: var(--success);
+    }
+
+    .insight code {
+      display: inline-block;
+      margin-top: 0.75rem;
+      padding: 0.4rem 0.8rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 6px;
+      font-family: 'SF Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--primary);
+    }
+
+    /* Comparison Container */
+    .comparison-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      padding: 1rem;
+      height: calc(100vh - 500px);
+      min-height: 450px;
+    }
+
+    .frame-wrapper {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .frame-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .frame-title {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .frame-title::before {
+      content: '';
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .frame-title.react::before { background: #61dafb; }
+    .frame-title.aether::before { background: linear-gradient(135deg, #8b5cf6, #06b6d4); }
+
+    .frame-badge {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .frame-badge.slow {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+    }
+
+    .frame-badge.fast {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+    }
+
+    iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: var(--surface);
+    }
+
+    .reload-btn {
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+      padding: 0.5rem 1rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.8rem;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .reload-btn:hover {
+      opacity: 1;
+    }
+
+    /* Footer */
+    .page-footer {
+      text-align: center;
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .page-footer strong {
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <h1>Jump-in Mode</h1>
+    <p>
+      Same React app. Add one script tag.
+      Content appears in <span class="highlight">&lt;50ms</span> instead of 1500ms.
+      React hydrates in the background if you need interactivity.
+    </p>
+  </header>
+
+  <div class="concept-box">
+    <h2>What Happens</h2>
+
+    <div class="timeline-comparison">
+      <div class="timeline react">
+        <h3>React Only</h3>
+        <div class="timeline-events">
+          <div class="timeline-event">
+            <span class="time">0ms</span>
+            <span class="event">Page loads (blank)</span>
+          </div>
+          <div class="timeline-event">
+            <span class="time">200ms</span>
+            <span class="event">React bundle downloading...</span>
+          </div>
+          <div class="timeline-event">
+            <span class="time">600ms</span>
+            <span class="event">Babel transpiling JSX...</span>
+          </div>
+          <div class="timeline-event">
+            <span class="time">900ms</span>
+            <span class="event">React parsing components...</span>
+          </div>
+          <div class="timeline-event">
+            <span class="time">1100ms</span>
+            <span class="event">fetch() calling API...</span>
+          </div>
+          <div class="timeline-event">
+            <span class="time">1300ms</span>
+            <span class="event">setState() triggering render...</span>
+          </div>
+          <div class="timeline-event content-visible">
+            <span class="time">1500ms</span>
+            <span class="event">Content finally visible</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline aether">
+        <h3>Aether Jump-in</h3>
+        <div class="timeline-events">
+          <div class="timeline-event">
+            <span class="time">0ms</span>
+            <span class="event">Page loads (structure visible)</span>
+          </div>
+          <div class="timeline-event">
+            <span class="time">15ms</span>
+            <span class="event">Kernel connects to SSE</span>
+          </div>
+          <div class="timeline-event content-visible">
+            <span class="time">45ms</span>
+            <span class="event">Content visible</span>
+          </div>
+          <div class="timeline-event">
+            <span class="time">200ms</span>
+            <span class="event">(React loading in background...)</span>
+          </div>
+          <div class="timeline-event">
+            <span class="time">1500ms</span>
+            <span class="event">(React ready for interactivity)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight">
+      <p>
+        <strong>The user sees content 30× faster.</strong><br>
+        React can still hydrate later for interactive features.<br>
+        But for displaying content? Hydration was never needed.
+      </p>
+      <code>Aether projects content. React adds interactivity (if needed).</code>
+    </div>
+  </div>
+
+  <div class="comparison-container">
+    <div class="frame-wrapper">
+      <div class="frame-header">
+        <span class="frame-title react">React Only</span>
+        <span class="frame-badge slow">~1500ms to content</span>
+      </div>
+      <iframe id="react-frame" src="without-aether.html" title="React Only"></iframe>
+      <button class="reload-btn" onclick="document.getElementById('react-frame').src = document.getElementById('react-frame').src">Reload</button>
+    </div>
+
+    <div class="frame-wrapper">
+      <div class="frame-header">
+        <span class="frame-title aether">Aether Jump-in</span>
+        <span class="frame-badge fast">&lt;50ms to content</span>
+      </div>
+      <iframe id="aether-frame" src="with-aether.html" title="Aether Jump-in"></iframe>
+      <button class="reload-btn" onclick="document.getElementById('aether-frame').src = document.getElementById('aether-frame').src">Reload</button>
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    <p>
+      <strong>Jump-in Mode:</strong> Add Aether to any React app. Content appears instantly. No rewrite needed.
+    </p>
+  </footer>
+</body>
+</html>

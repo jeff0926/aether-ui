@@ -187,22 +187,41 @@ Every demo includes `<noscript>` notices proving this.
 
 | Example | Path | Description |
 |---------|------|-------------|
-| **React Replacement** | `/examples/react-replacement/` | **Proves: A real React app does not need React** |
+| **Jump-in Mode** | `/examples/mode-jumpin/` | **The "aha" demo: 50ms content vs 1500ms** |
+| **React Replacement** | `/examples/react-replacement/` | Proves: A real React app does not need React |
 | **EDS Leapfrog** | `/examples/eds-leapfrog/` | React vs Aether side-by-side |
 | **Alerts** | `/examples/ui/alert.html` | Status notifications |
 | **Metrics** | `/examples/ui/metrics.html` | Live telemetry dashboard |
 | **Dashboard** | `/examples/ui/dashboard.html` | Multi-slot composition |
 
-### React Replacement Demo
+---
 
-The `/examples/react-replacement/` demo shows a typical React app pattern (Service Monitor) and its Aether equivalent:
+## Integration Modes
+
+Aether supports three integration modes for existing React apps:
+
+### 1. Jump-in Mode (Most Impressive)
+
+Add one script tag. Content appears in **<50ms** instead of 1500ms.
 
 ```
-React Version:   useState + useEffect + fetch → JSON → setState → render
-Aether Version:  SSE → Kernel → DOM
+Without Aether:  Blank → React loading → hydrate → fetch → render (1500ms)
+With Aether:     Content visible (50ms) → React hydrates in background
 ```
 
-Same UI. Same data. No React required.
+The user sees content **30× faster**. React can still hydrate for interactivity.
+
+**Demo:** `/examples/mode-jumpin/`
+
+### 2. Replace Mode
+
+Remove React entirely. Use Aether for content-driven UIs.
+
+**Demo:** `/examples/react-replacement/`
+
+### 3. Snap-in Mode
+
+Aether components coexist with React on the same page. Gradual adoption path.
 
 ---
 

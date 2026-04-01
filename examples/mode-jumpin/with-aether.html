@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Aether Jump-in Mode</title>
+  <!--
+    AETHER JUMP-IN: Content appears BEFORE React loads.
+
+    The 868-byte kernel connects to SSE and projects content
+    into slots within ~50ms. React can hydrate later if needed
+    for interactivity, but the user already sees content.
+  -->
+  <script src="../../dist/aether-kernel.min.js"></script>
+  <link rel="stylesheet" href="shared.css">
+</head>
+<body>
+  <!-- Performance timing display -->
+  <div class="timing-banner" id="timing-banner">
+    <span class="timing-label">Time to Content:</span>
+    <span class="timing-value" id="timing-value">measuring...</span>
+    <span class="timing-extra" id="timing-extra"></span>
+  </div>
+
+  <div class="dashboard">
+    <header class="dashboard-header">
+      <h1>Analytics Dashboard</h1>
+      <span class="mode-badge aether">Aether Jump-in</span>
+    </header>
+
+    <!--
+      AETHER PROJECTS CONTENT HERE INSTANTLY.
+      These slots are filled via SSE in <50ms.
+      No React, no hydration, no waiting.
+    -->
+    <aether-runtime endpoint="/api/sse" namespace="jumpin-stats" id="stats-runtime">
+      <section class="stats-grid">
+        <div class="stats-card" style="--card-accent: #3b82f6;">
+          <div class="stats-label">Total Users</div>
+          <div class="stats-value" data-aether-slot="users">--</div>
+          <div class="stats-trend" data-trend="up" data-aether-slot="users-trend">↑ --%</div>
+        </div>
+        <div class="stats-card" style="--card-accent: #22c55e;">
+          <div class="stats-label">Revenue</div>
+          <div class="stats-value" data-aether-slot="revenue">--</div>
+          <div class="stats-trend" data-trend="up" data-aether-slot="revenue-trend">↑ --%</div>
+        </div>
+        <div class="stats-card" style="--card-accent: #f59e0b;">
+          <div class="stats-label">Orders</div>
+          <div class="stats-value" data-aether-slot="orders">--</div>
+          <div class="stats-trend" data-trend="down" data-aether-slot="orders-trend">↓ --%</div>
+        </div>
+        <div class="stats-card" style="--card-accent: #8b5cf6;">
+          <div class="stats-label">Conversion</div>
+          <div class="stats-value" data-aether-slot="conversion">--</div>
+          <div class="stats-trend" data-trend="up" data-aether-slot="conversion-trend">↑ --%</div>
+        </div>
+      </section>
+    </aether-runtime>
+
+    <aether-runtime endpoint="/api/sse" namespace="jumpin-activity" id="activity-runtime">
+      <section class="activity-section">
+        <h2>Recent Activity</h2>
+        <div class="activity-list">
+          <div class="activity-item">
+            <div class="activity-dot"></div>
+            <div class="activity-content">
+              <span class="activity-action" data-aether-slot="activity-1-action">Loading...</span>
+              <span class="activity-user" data-aether-slot="activity-1-user"></span>
+            </div>
+            <span class="activity-time" data-aether-slot="activity-1-time">--:--</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot"></div>
+            <div class="activity-content">
+              <span class="activity-action" data-aether-slot="activity-2-action">Loading...</span>
+              <span class="activity-user" data-aether-slot="activity-2-user"></span>
+            </div>
+            <span class="activity-time" data-aether-slot="activity-2-time">--:--</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot"></div>
+            <div class="activity-content">
+              <span class="activity-action" data-aether-slot="activity-3-action">Loading...</span>
+              <span class="activity-user" data-aether-slot="activity-3-user"></span>
+            </div>
+            <span class="activity-time" data-aether-slot="activity-3-time">--:--</span>
+          </div>
+        </div>
+      </section>
+    </aether-runtime>
+
+    <footer class="dashboard-footer">
+      <div class="execution-model">
+        <strong>Execution Path:</strong>
+        <code>SSE → Kernel (868B) → DOM</code>
+      </div>
+      <div class="hydration-status" id="hydration-status">
+        React: <span id="react-status">Not loaded</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Aether web component adapter -->
+  <script type="module" src="../../src/adapter/web-component.js"></script>
+
+  <!-- Measure time to first content -->
+  <script>
+    const startTime = performance.now();
+
+    // Watch for first slot content update
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.target.hasAttribute('data-aether-slot') &&
+            mutation.target.textContent !== '--' &&
+            mutation.target.textContent !== 'Loading...') {
+          const elapsed = Math.round(performance.now() - startTime);
+          document.getElementById('timing-value').textContent = `${elapsed}ms`;
+          document.getElementById('timing-banner').classList.add('complete');
+          observer.disconnect();
+          break;
+        }
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+  </script>
+
+  <!--
+    OPTIONAL: Load React in background for interactivity.
+    This demonstrates that React CAN hydrate after Aether,
+    but the user already has content.
+  -->
+  <script>
+    // Simulate delayed React loading (as would happen in real app)
+    setTimeout(() => {
+      const script1 = document.createElement('script');
+      script1.src = 'https://unpkg.com/react@18/umd/react.development.js';
+      script1.onload = () => {
+        const script2 = document.createElement('script');
+        script2.src = 'https://unpkg.com/react-dom@18/umd/react-dom.development.js';
+        script2.onload = () => {
+          // React is now available
+          const elapsed = Math.round(performance.now() - startTime);
+          document.getElementById('react-status').textContent = `Loaded at ${elapsed}ms`;
+          document.getElementById('react-status').style.color = '#22c55e';
+          document.getElementById('timing-extra').textContent = `(React ready at ${elapsed}ms)`;
+
+          // React COULD hydrate here and add interactivity
+          // But the user already saw content via Aether!
+        };
+        document.head.appendChild(script2);
+      };
+      document.head.appendChild(script1);
+    }, 100); // Small delay to let Aether show content first
+  </script>
+</body>
+</html>
