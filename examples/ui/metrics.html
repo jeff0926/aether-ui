@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metrics Display | Aether UI</title>
+  <script src="../../dist/aether-kernel.min.js"></script>
+  <style>
+    :root {
+      --primary: #1473e6;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --surface: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--surface);
+      min-height: 100vh;
+      padding: 2rem;
+      color: white;
+    }
+
+    .page-header {
+      max-width: 1200px;
+      margin: 0 auto 2rem;
+      text-align: center;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: var(--text-muted);
+    }
+
+    .metrics-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* ============================================
+       METRIC CARD COMPONENT
+       ============================================ */
+    .metric-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .metric-card__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .metric-card__label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .metric-card__status {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--metric-status, var(--success));
+      animation: status-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes status-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .metric-card__value {
+      font-size: 3rem;
+      font-weight: 700;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: var(--metric-color, white);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      transition: color 0.3s, transform 0.2s;
+    }
+
+    .metric-card__unit {
+      font-size: 1.25rem;
+      font-weight: 400;
+      opacity: 0.7;
+    }
+
+    .metric-card__delta {
+      font-size: 0.875rem;
+      color: var(--metric-delta, var(--success));
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .metric-card__delta::before {
+      content: var(--delta-icon, '↑');
+    }
+
+    .metric-card__trend {
+      margin-top: 1rem;
+      height: 40px;
+      background: linear-gradient(to right, var(--metric-color, var(--primary)) 0%, transparent 100%);
+      opacity: 0.2;
+      border-radius: 4px;
+    }
+
+    /* ============================================
+       PHASE BEHAVIOR (CSS-only)
+       ============================================ */
+
+    /* REFLEX */
+    [data-phase="reflex"] .metric-card {
+      animation: metric-reflex 0.15s ease-out;
+    }
+
+    [data-phase="reflex"] .metric-card__value {
+      animation: value-flash 0.2s ease-out;
+    }
+
+    @keyframes metric-reflex {
+      0% { transform: scale(0.98); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes value-flash {
+      0% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+
+    /* DELIBERATION */
+    [data-phase="deliberation"] .metric-card {
+      animation: metric-deliberate 1.5s ease-in-out infinite;
+    }
+
+    [data-phase="deliberation"] .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--metric-color, var(--primary)), transparent);
+      animation: thinking-bar 1.5s ease-in-out infinite;
+    }
+
+    @keyframes metric-deliberate {
+      0%, 100% { border-color: var(--border); }
+      50% { border-color: var(--metric-color, var(--primary)); }
+    }
+
+    @keyframes thinking-bar {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* COMPLETE */
+    [data-phase="complete"] .metric-card {
+      animation: metric-complete 0.3s ease-out;
+    }
+
+    [data-phase="complete"] .metric-card__status {
+      background: var(--success);
+      animation: none;
+    }
+
+    @keyframes metric-complete {
+      0% { transform: scale(0.99); }
+      50% { transform: scale(1.01); }
+      100% { transform: scale(1); }
+    }
+
+    /* GHOST */
+    [data-phase="ghost"] .metric-card {
+      opacity: 0.4;
+      filter: grayscale(50%);
+    }
+
+    [data-phase="ghost"] .metric-card__status {
+      background: var(--text-muted);
+      animation: none;
+    }
+
+    /* Phase badge */
+    aether-runtime {
+      display: block;
+      position: relative;
+    }
+
+    aether-runtime::before {
+      content: attr(data-phase);
+      position: absolute;
+      top: -6px;
+      right: 12px;
+      font-size: 0.6rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      z-index: 10;
+      font-family: monospace;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    aether-runtime[data-phase="reflex"]::before { color: var(--primary); border-color: var(--primary); }
+    aether-runtime[data-phase="deliberation"]::before { color: var(--warning); border-color: var(--warning); }
+    aether-runtime[data-phase="complete"]::before { color: var(--success); border-color: var(--success); }
+
+    /* Slot transitions */
+    [data-aether-slot] {
+      transition: all var(--tempo, 0.2s) ease;
+    }
+
+    /* Progressive Enhancement */
+    noscript .notice {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--success);
+      padding: 1rem;
+      text-align: center;
+      border-radius: var(--radius);
+      margin-bottom: 2rem;
+      border: 1px solid var(--success);
+    }
+  </style>
+</head>
+<body>
+  <noscript>
+    <div class="notice">
+      JavaScript disabled. Static metrics visible. Live updates unavailable.
+    </div>
+  </noscript>
+
+  <header class="page-header">
+    <h1>Live Metrics</h1>
+    <p>Real-time telemetry with phase-aware visual feedback</p>
+  </header>
+
+  <div class="metrics-grid">
+    <!-- CPU Usage -->
+    <aether-runtime endpoint="/api/sse" namespace="metric-cpu" id="cpu-metric">
+      <div class="metric-card" style="--metric-color: #3b82f6;">
+        <div class="metric-card__header">
+          <span class="metric-card__label">CPU Usage</span>
+          <span class="metric-card__status"></span>
+        </div>
+        <div class="metric-card__value">
+          <span data-aether-slot="value">--</span><span class="metric-card__unit">%</span>
+        </div>
+        <div class="metric-card__delta" data-aether-slot="delta">calculating...</div>
+        <div class="metric-card__trend"></div>
+      </div>
+    </aether-runtime>
+
+    <!-- Memory Usage -->
+    <aether-runtime endpoint="/api/sse" namespace="metric-memory" id="memory-metric">
+      <div class="metric-card" style="--metric-color: #8b5cf6;">
+        <div class="metric-card__header">
+          <span class="metric-card__label">Memory</span>
+          <span class="metric-card__status"></span>
+        </div>
+        <div class="metric-card__value">
+          <span data-aether-slot="value">--</span><span class="metric-card__unit">GB</span>
+        </div>
+        <div class="metric-card__delta" data-aether-slot="delta">calculating...</div>
+        <div class="metric-card__trend"></div>
+      </div>
+    </aether-runtime>
+
+    <!-- Requests/sec -->
+    <aether-runtime endpoint="/api/sse" namespace="metric-requests" id="requests-metric">
+      <div class="metric-card" style="--metric-color: #22c55e;">
+        <div class="metric-card__header">
+          <span class="metric-card__label">Requests/sec</span>
+          <span class="metric-card__status"></span>
+        </div>
+        <div class="metric-card__value">
+          <span data-aether-slot="value">--</span><span class="metric-card__unit">k</span>
+        </div>
+        <div class="metric-card__delta" data-aether-slot="delta">calculating...</div>
+        <div class="metric-card__trend"></div>
+      </div>
+    </aether-runtime>
+
+    <!-- Latency -->
+    <aether-runtime endpoint="/api/sse" namespace="metric-latency" id="latency-metric">
+      <div class="metric-card" style="--metric-color: #f59e0b;">
+        <div class="metric-card__header">
+          <span class="metric-card__label">P99 Latency</span>
+          <span class="metric-card__status"></span>
+        </div>
+        <div class="metric-card__value">
+          <span data-aether-slot="value">--</span><span class="metric-card__unit">ms</span>
+        </div>
+        <div class="metric-card__delta" data-aether-slot="delta">calculating...</div>
+        <div class="metric-card__trend"></div>
+      </div>
+    </aether-runtime>
+
+    <!-- Error Rate -->
+    <aether-runtime endpoint="/api/sse" namespace="metric-errors" id="errors-metric">
+      <div class="metric-card" style="--metric-color: #ef4444;">
+        <div class="metric-card__header">
+          <span class="metric-card__label">Error Rate</span>
+          <span class="metric-card__status"></span>
+        </div>
+        <div class="metric-card__value">
+          <span data-aether-slot="value">--</span><span class="metric-card__unit">%</span>
+        </div>
+        <div class="metric-card__delta" data-aether-slot="delta">calculating...</div>
+        <div class="metric-card__trend"></div>
+      </div>
+    </aether-runtime>
+
+    <!-- Uptime -->
+    <aether-runtime endpoint="/api/sse" namespace="metric-uptime" id="uptime-metric">
+      <div class="metric-card" style="--metric-color: #06b6d4;">
+        <div class="metric-card__header">
+          <span class="metric-card__label">Uptime</span>
+          <span class="metric-card__status"></span>
+        </div>
+        <div class="metric-card__value">
+          <span data-aether-slot="value">--</span><span class="metric-card__unit">%</span>
+        </div>
+        <div class="metric-card__delta" data-aether-slot="delta">calculating...</div>
+        <div class="metric-card__trend"></div>
+      </div>
+    </aether-runtime>
+  </div>
+
+  <script type="module" src="../../src/adapter/web-component.js"></script>
+</body>
+</html>

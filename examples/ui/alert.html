@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alert System | Aether UI</title>
+  <script src="../../dist/aether-kernel.min.js"></script>
+  <style>
+    :root {
+      --primary: #1473e6;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #0ea5e9;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --surface: #f8fafc;
+      --border: #e2e8f0;
+      --radius: 8px;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--surface);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .page-header {
+      max-width: 800px;
+      margin: 0 auto 2rem;
+      text-align: center;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: var(--text-muted);
+    }
+
+    .alerts-container {
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* ============================================
+       ALERT COMPONENT
+       ============================================ */
+    .alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      background: white;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--alert-color, var(--primary));
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .alert__icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--alert-bg, #e0f2fe);
+      border-radius: 50%;
+    }
+
+    .alert__content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .alert__title {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+      transition: color 0.3s;
+    }
+
+    .alert__message {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .alert__time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      font-family: monospace;
+    }
+
+    .alert__dismiss {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.25rem;
+      font-size: 1.25rem;
+      line-height: 1;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+
+    .alert__dismiss:hover { opacity: 1; }
+
+    /* Alert Types */
+    .alert--success { --alert-color: var(--success); --alert-bg: #dcfce7; }
+    .alert--warning { --alert-color: var(--warning); --alert-bg: #fef3c7; }
+    .alert--danger { --alert-color: var(--danger); --alert-bg: #fee2e2; }
+    .alert--info { --alert-color: var(--info); --alert-bg: #e0f2fe; }
+
+    /* ============================================
+       PHASE BEHAVIOR (CSS-only)
+       ============================================ */
+
+    /* REFLEX: Fast, immediate response */
+    [data-phase="reflex"] .alert {
+      animation: alert-reflex 0.2s ease-out;
+    }
+
+    @keyframes alert-reflex {
+      0% { transform: translateX(-8px); opacity: 0.7; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+
+    /* DELIBERATION: Processing, thinking */
+    [data-phase="deliberation"] .alert {
+      animation: alert-pulse 1.5s ease-in-out infinite;
+    }
+
+    [data-phase="deliberation"] .alert::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--alert-color, var(--primary)), transparent);
+      animation: alert-thinking 1.5s ease-in-out infinite;
+    }
+
+    @keyframes alert-pulse {
+      0%, 100% { box-shadow: var(--shadow); }
+      50% { box-shadow: 0 8px 12px -2px rgb(0 0 0 / 0.15); }
+    }
+
+    @keyframes alert-thinking {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* COMPLETE: Stable, final state */
+    [data-phase="complete"] .alert {
+      animation: alert-complete 0.3s ease-out;
+    }
+
+    [data-phase="complete"] .alert::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: dot-appear 0.3s ease-out;
+    }
+
+    @keyframes alert-complete {
+      0% { transform: scale(0.98); }
+      50% { transform: scale(1.01); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes dot-appear {
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
+    }
+
+    /* GHOST: Degraded state */
+    [data-phase="ghost"] .alert {
+      opacity: 0.5;
+      filter: grayscale(40%);
+    }
+
+    /* Phase indicator badge */
+    aether-runtime {
+      display: block;
+      position: relative;
+    }
+
+    aether-runtime::before {
+      content: attr(data-phase);
+      position: absolute;
+      top: -8px;
+      right: 8px;
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      z-index: 10;
+      font-family: monospace;
+    }
+
+    aether-runtime[data-phase="reflex"]::before {
+      background: var(--primary);
+      color: white;
+    }
+
+    aether-runtime[data-phase="deliberation"]::before {
+      background: var(--warning);
+      color: white;
+    }
+
+    aether-runtime[data-phase="complete"]::before {
+      background: var(--success);
+      color: white;
+    }
+
+    aether-runtime[data-phase="ghost"]::before {
+      background: var(--text-muted);
+      color: white;
+    }
+
+    /* Progressive Enhancement */
+    noscript .notice {
+      background: #e6f4ef;
+      color: #2d9d78;
+      padding: 1rem;
+      text-align: center;
+      border-radius: var(--radius);
+      margin-bottom: 2rem;
+    }
+
+    /* Slot transitions */
+    [data-aether-slot] {
+      transition: all var(--tempo, 0.3s) ease;
+    }
+  </style>
+</head>
+<body>
+  <noscript>
+    <div class="notice">
+      JavaScript disabled. Static content visible. Live updates unavailable.
+    </div>
+  </noscript>
+
+  <header class="page-header">
+    <h1>Alert System</h1>
+    <p>Status notifications with live SSE updates and phase transitions</p>
+  </header>
+
+  <div class="alerts-container">
+    <!-- System Status Alert (SSE-driven) -->
+    <aether-runtime endpoint="/api/sse" namespace="alert-system" id="system-alert">
+      <div class="alert alert--info">
+        <div class="alert__icon">&#128712;</div>
+        <div class="alert__content">
+          <h4 class="alert__title" data-aether-slot="title">System Status</h4>
+          <p class="alert__message" data-aether-slot="message">Connecting to monitoring service...</p>
+          <span class="alert__time" data-aether-slot="time">--:--:--</span>
+        </div>
+        <button class="alert__dismiss" aria-label="Dismiss">&times;</button>
+      </div>
+    </aether-runtime>
+
+    <!-- Deployment Alert (SSE-driven) -->
+    <aether-runtime endpoint="/api/sse" namespace="alert-deploy" id="deploy-alert">
+      <div class="alert alert--success">
+        <div class="alert__icon">&#128640;</div>
+        <div class="alert__content">
+          <h4 class="alert__title" data-aether-slot="title">Deployment</h4>
+          <p class="alert__message" data-aether-slot="message">Awaiting deployment status...</p>
+          <span class="alert__time" data-aether-slot="time">--:--:--</span>
+        </div>
+        <button class="alert__dismiss" aria-label="Dismiss">&times;</button>
+      </div>
+    </aether-runtime>
+
+    <!-- Security Alert (SSE-driven) -->
+    <aether-runtime endpoint="/api/sse" namespace="alert-security" id="security-alert">
+      <div class="alert alert--warning">
+        <div class="alert__icon">&#128274;</div>
+        <div class="alert__content">
+          <h4 class="alert__title" data-aether-slot="title">Security</h4>
+          <p class="alert__message" data-aether-slot="message">Monitoring security events...</p>
+          <span class="alert__time" data-aether-slot="time">--:--:--</span>
+        </div>
+        <button class="alert__dismiss" aria-label="Dismiss">&times;</button>
+      </div>
+    </aether-runtime>
+
+    <!-- Error Alert (SSE-driven) -->
+    <aether-runtime endpoint="/api/sse" namespace="alert-error" id="error-alert">
+      <div class="alert alert--danger">
+        <div class="alert__icon">&#9888;</div>
+        <div class="alert__content">
+          <h4 class="alert__title" data-aether-slot="title">Error Monitor</h4>
+          <p class="alert__message" data-aether-slot="message">Watching for errors...</p>
+          <span class="alert__time" data-aether-slot="time">--:--:--</span>
+        </div>
+        <button class="alert__dismiss" aria-label="Dismiss">&times;</button>
+      </div>
+    </aether-runtime>
+  </div>
+
+  <script type="module" src="../../src/adapter/web-component.js"></script>
+</body>
+</html>

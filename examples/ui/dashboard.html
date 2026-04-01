@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Aether UI</title>
+  <script src="../../dist/aether-kernel.min.js"></script>
+  <style>
+    :root {
+      --primary: #1473e6;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --surface: #f1f5f9;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--surface);
+      min-height: 100vh;
+    }
+
+    /* ============================================
+       DASHBOARD LAYOUT
+       ============================================ */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      grid-template-rows: 64px 1fr;
+      min-height: 100vh;
+    }
+
+    .dashboard__header {
+      grid-column: 1 / -1;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+    }
+
+    .dashboard__logo {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dashboard__logo svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .dashboard__status {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.875rem;
+    }
+
+    .dashboard__sidebar {
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem;
+    }
+
+    .sidebar__section {
+      margin-bottom: 2rem;
+    }
+
+    .sidebar__title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .sidebar__item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .sidebar__item:hover { background: var(--surface); }
+    .sidebar__item--active { background: #e0f2fe; color: var(--primary); }
+
+    .dashboard__main {
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    /* ============================================
+       OVERVIEW PANEL (Multi-slot composition)
+       ============================================ */
+    .overview-panel {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .overview-panel__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .overview-panel__title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .overview-panel__badge {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      background: var(--badge-bg, #e0f2fe);
+      color: var(--badge-color, var(--primary));
+      font-weight: 500;
+    }
+
+    .overview-panel__grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .overview-stat {
+      text-align: center;
+      padding: 1rem;
+      background: var(--surface);
+      border-radius: 8px;
+    }
+
+    .overview-stat__value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--stat-color, var(--text));
+      font-family: 'SF Mono', monospace;
+      transition: all 0.3s;
+    }
+
+    .overview-stat__label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ============================================
+       ACTIVITY FEED
+       ============================================ */
+    .activity-feed {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+    }
+
+    .activity-feed__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .activity-feed__title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .activity-feed__list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: var(--surface);
+      border-radius: 8px;
+      border-left: 3px solid var(--activity-color, var(--primary));
+    }
+
+    .activity-item__icon {
+      font-size: 1.25rem;
+    }
+
+    .activity-item__content {
+      flex: 1;
+    }
+
+    .activity-item__text {
+      font-size: 0.875rem;
+      color: var(--text);
+    }
+
+    .activity-item__time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    /* ============================================
+       PHASE BEHAVIOR (CSS-only)
+       ============================================ */
+
+    /* REFLEX */
+    [data-phase="reflex"] .overview-panel,
+    [data-phase="reflex"] .activity-feed {
+      animation: panel-reflex 0.2s ease-out;
+    }
+
+    @keyframes panel-reflex {
+      0% { opacity: 0.8; transform: translateY(-2px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* DELIBERATION */
+    [data-phase="deliberation"] .overview-panel,
+    [data-phase="deliberation"] .activity-feed {
+      animation: panel-pulse 2s ease-in-out infinite;
+    }
+
+    [data-phase="deliberation"]::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--success) 50%, var(--primary) 100%);
+      background-size: 200% 100%;
+      animation: gradient-slide 2s linear infinite;
+    }
+
+    @keyframes panel-pulse {
+      0%, 100% { box-shadow: var(--shadow); }
+      50% { box-shadow: 0 8px 16px -2px rgb(0 0 0 / 0.15); }
+    }
+
+    @keyframes gradient-slide {
+      0% { background-position: 100% 0; }
+      100% { background-position: -100% 0; }
+    }
+
+    /* COMPLETE */
+    [data-phase="complete"] .overview-panel,
+    [data-phase="complete"] .activity-feed {
+      animation: panel-complete 0.3s ease-out;
+    }
+
+    [data-phase="complete"] .overview-panel__badge {
+      --badge-bg: #dcfce7;
+      --badge-color: var(--success);
+    }
+
+    @keyframes panel-complete {
+      0% { transform: scale(0.99); }
+      50% { transform: scale(1.005); }
+      100% { transform: scale(1); }
+    }
+
+    /* GHOST */
+    [data-phase="ghost"] .overview-panel,
+    [data-phase="ghost"] .activity-feed {
+      opacity: 0.5;
+      filter: grayscale(30%);
+    }
+
+    /* Phase badge */
+    aether-runtime {
+      display: block;
+      position: relative;
+    }
+
+    aether-runtime::after {
+      content: attr(data-phase);
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 0.6rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      z-index: 10;
+      font-family: monospace;
+    }
+
+    aether-runtime[data-phase="reflex"]::after { background: var(--primary); color: white; }
+    aether-runtime[data-phase="deliberation"]::after { background: var(--warning); color: white; }
+    aether-runtime[data-phase="complete"]::after { background: var(--success); color: white; }
+    aether-runtime[data-phase="ghost"]::after { background: var(--text-muted); color: white; }
+
+    /* Slot transitions */
+    [data-aether-slot] {
+      transition: all var(--tempo, 0.3s) ease;
+    }
+
+    /* Progressive Enhancement */
+    noscript .notice {
+      background: #e6f4ef;
+      color: #2d9d78;
+      padding: 1rem;
+      text-align: center;
+      margin: 1rem;
+      border-radius: var(--radius);
+    }
+
+    /* Two-column layout for main content */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 1024px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .overview-panel__grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <noscript>
+    <div class="notice">
+      JavaScript disabled. Dashboard layout visible. Live updates unavailable.
+    </div>
+  </noscript>
+
+  <div class="dashboard">
+    <!-- Header -->
+    <header class="dashboard__header">
+      <div class="dashboard__logo">
+        <svg viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="14" stroke="#1473e6" stroke-width="2"/>
+          <path d="M10 16h12M16 10v12" stroke="#1473e6" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Aether Dashboard</span>
+      </div>
+      <div class="dashboard__status">
+        <span style="color: var(--success);">&#9679; Live</span>
+        <span style="color: var(--text-muted);">Last update: <span id="last-update">--:--:--</span></span>
+      </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="dashboard__sidebar">
+      <div class="sidebar__section">
+        <div class="sidebar__title">Navigation</div>
+        <div class="sidebar__item sidebar__item--active">&#128200; Overview</div>
+        <div class="sidebar__item">&#128202; Analytics</div>
+        <div class="sidebar__item">&#128221; Reports</div>
+        <div class="sidebar__item">&#9881; Settings</div>
+      </div>
+      <div class="sidebar__section">
+        <div class="sidebar__title">Quick Stats</div>
+        <aether-runtime endpoint="/api/sse" namespace="sidebar-stats" id="sidebar-stats">
+          <div style="font-size: 0.875rem; color: var(--text-muted);">
+            <div style="margin-bottom: 0.5rem;">
+              <span>Active Users:</span>
+              <strong data-aether-slot="users" style="color: var(--text);">--</strong>
+            </div>
+            <div style="margin-bottom: 0.5rem;">
+              <span>Sessions:</span>
+              <strong data-aether-slot="sessions" style="color: var(--text);">--</strong>
+            </div>
+            <div>
+              <span>Revenue:</span>
+              <strong data-aether-slot="revenue" style="color: var(--success);">--</strong>
+            </div>
+          </div>
+        </aether-runtime>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard__main">
+      <div class="main-grid">
+        <!-- Left Column -->
+        <div>
+          <!-- Overview Panel (Multi-slot) -->
+          <aether-runtime endpoint="/api/sse" namespace="dashboard-overview" id="overview">
+            <div class="overview-panel">
+              <div class="overview-panel__header">
+                <h2 class="overview-panel__title">System Overview</h2>
+                <span class="overview-panel__badge" data-aether-slot="status">Connecting...</span>
+              </div>
+              <div class="overview-panel__grid">
+                <div class="overview-stat" style="--stat-color: #3b82f6;">
+                  <div class="overview-stat__value" data-aether-slot="cpu">--</div>
+                  <div class="overview-stat__label">CPU</div>
+                </div>
+                <div class="overview-stat" style="--stat-color: #8b5cf6;">
+                  <div class="overview-stat__value" data-aether-slot="memory">--</div>
+                  <div class="overview-stat__label">Memory</div>
+                </div>
+                <div class="overview-stat" style="--stat-color: #22c55e;">
+                  <div class="overview-stat__value" data-aether-slot="requests">--</div>
+                  <div class="overview-stat__label">Requests</div>
+                </div>
+                <div class="overview-stat" style="--stat-color: #f59e0b;">
+                  <div class="overview-stat__value" data-aether-slot="latency">--</div>
+                  <div class="overview-stat__label">Latency</div>
+                </div>
+              </div>
+            </div>
+          </aether-runtime>
+
+          <!-- Secondary Panel -->
+          <aether-runtime endpoint="/api/sse" namespace="dashboard-health" id="health">
+            <div class="overview-panel">
+              <div class="overview-panel__header">
+                <h2 class="overview-panel__title">Service Health</h2>
+                <span class="overview-panel__badge" data-aether-slot="health-status">Checking...</span>
+              </div>
+              <div class="overview-panel__grid">
+                <div class="overview-stat">
+                  <div class="overview-stat__value" data-aether-slot="api-status">--</div>
+                  <div class="overview-stat__label">API</div>
+                </div>
+                <div class="overview-stat">
+                  <div class="overview-stat__value" data-aether-slot="db-status">--</div>
+                  <div class="overview-stat__label">Database</div>
+                </div>
+                <div class="overview-stat">
+                  <div class="overview-stat__value" data-aether-slot="cache-status">--</div>
+                  <div class="overview-stat__label">Cache</div>
+                </div>
+                <div class="overview-stat">
+                  <div class="overview-stat__value" data-aether-slot="queue-status">--</div>
+                  <div class="overview-stat__label">Queue</div>
+                </div>
+              </div>
+            </div>
+          </aether-runtime>
+        </div>
+
+        <!-- Right Column: Activity Feed -->
+        <div>
+          <aether-runtime endpoint="/api/sse" namespace="dashboard-activity" id="activity">
+            <div class="activity-feed">
+              <div class="activity-feed__header">
+                <h3 class="activity-feed__title">Recent Activity</h3>
+              </div>
+              <div class="activity-feed__list">
+                <div class="activity-item" style="--activity-color: var(--success);">
+                  <span class="activity-item__icon">&#9989;</span>
+                  <div class="activity-item__content">
+                    <div class="activity-item__text" data-aether-slot="activity-1">Waiting for activity...</div>
+                    <div class="activity-item__time" data-aether-slot="activity-1-time">--:--:--</div>
+                  </div>
+                </div>
+                <div class="activity-item" style="--activity-color: var(--primary);">
+                  <span class="activity-item__icon">&#128712;</span>
+                  <div class="activity-item__content">
+                    <div class="activity-item__text" data-aether-slot="activity-2">Waiting for activity...</div>
+                    <div class="activity-item__time" data-aether-slot="activity-2-time">--:--:--</div>
+                  </div>
+                </div>
+                <div class="activity-item" style="--activity-color: var(--warning);">
+                  <span class="activity-item__icon">&#9888;</span>
+                  <div class="activity-item__content">
+                    <div class="activity-item__text" data-aether-slot="activity-3">Waiting for activity...</div>
+                    <div class="activity-item__time" data-aether-slot="activity-3-time">--:--:--</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aether-runtime>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="../../src/adapter/web-component.js"></script>
+  <script>
+    // Update timestamp (minimal JS for display only)
+    setInterval(() => {
+      document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+    }, 1000);
+  </script>
+</body>
+</html>

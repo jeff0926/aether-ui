@@ -152,6 +152,236 @@ function mockSSEPlugin() {
           return;
         }
 
+        // ============================================
+        // WS3: ALERT SYSTEM NAMESPACES
+        // ============================================
+        if (namespace === 'alert-system') {
+          const phases = ['reflex', 'deliberation', 'deliberation', 'complete'];
+          const statuses = [
+            { title: 'System Online', message: 'All services operational', phase: 'complete' },
+            { title: 'Processing Request', message: 'Handling incoming traffic...', phase: 'deliberation' },
+            { title: 'Health Check', message: 'Running diagnostics...', phase: 'deliberation' },
+            { title: 'System Stable', message: 'No issues detected', phase: 'complete' }
+          ];
+          let idx = 0;
+          res.write(`data: ${JSON.stringify({ phase: 'reflex', content: { title: 'Connecting...', message: 'Establishing connection', time: new Date().toLocaleTimeString() } })}\n\n`);
+          const interval = setInterval(() => {
+            const s = statuses[idx % statuses.length];
+            res.write(`data: ${JSON.stringify({ phase: s.phase, content: { title: s.title, message: s.message, time: new Date().toLocaleTimeString() } })}\n\n`);
+            idx++;
+          }, 3000);
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        if (namespace === 'alert-deploy') {
+          const deploys = [
+            { title: 'Deployment Started', message: 'Building containers...', phase: 'reflex' },
+            { title: 'Rolling Update', message: 'Updating pods 3/5...', phase: 'deliberation' },
+            { title: 'Running Tests', message: 'Integration tests passing...', phase: 'deliberation' },
+            { title: 'Deployment Complete', message: 'Version 2.4.3 live', phase: 'complete' }
+          ];
+          let idx = 0;
+          res.write(`data: ${JSON.stringify({ phase: 'reflex', content: { title: 'Initializing', message: 'Preparing deployment pipeline', time: new Date().toLocaleTimeString() } })}\n\n`);
+          const interval = setInterval(() => {
+            const d = deploys[idx % deploys.length];
+            res.write(`data: ${JSON.stringify({ phase: d.phase, content: { title: d.title, message: d.message, time: new Date().toLocaleTimeString() } })}\n\n`);
+            idx++;
+          }, 4000);
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        if (namespace === 'alert-security') {
+          const events = [
+            { title: 'Scanning Traffic', message: 'Analyzing request patterns...', phase: 'deliberation' },
+            { title: 'Login Attempt', message: 'New authentication from 192.168.1.x', phase: 'reflex' },
+            { title: 'Firewall Active', message: 'No threats detected', phase: 'complete' },
+            { title: 'SSL Renewed', message: 'Certificate valid for 90 days', phase: 'complete' }
+          ];
+          let idx = 0;
+          res.write(`data: ${JSON.stringify({ phase: 'reflex', content: { title: 'Security Monitor', message: 'Initializing scan...', time: new Date().toLocaleTimeString() } })}\n\n`);
+          const interval = setInterval(() => {
+            const e = events[idx % events.length];
+            res.write(`data: ${JSON.stringify({ phase: e.phase, content: { title: e.title, message: e.message, time: new Date().toLocaleTimeString() } })}\n\n`);
+            idx++;
+          }, 3500);
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        if (namespace === 'alert-error') {
+          const errors = [
+            { title: 'No Errors', message: '0 errors in last 24 hours', phase: 'complete' },
+            { title: 'Warning Detected', message: 'Slow query on users table', phase: 'deliberation' },
+            { title: 'Monitoring', message: 'Watching error rates...', phase: 'deliberation' },
+            { title: 'All Clear', message: 'Error rate below threshold', phase: 'complete' }
+          ];
+          let idx = 0;
+          res.write(`data: ${JSON.stringify({ phase: 'reflex', content: { title: 'Error Monitor', message: 'Starting up...', time: new Date().toLocaleTimeString() } })}\n\n`);
+          const interval = setInterval(() => {
+            const e = errors[idx % errors.length];
+            res.write(`data: ${JSON.stringify({ phase: e.phase, content: { title: e.title, message: e.message, time: new Date().toLocaleTimeString() } })}\n\n`);
+            idx++;
+          }, 3200);
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        // ============================================
+        // WS3: METRICS NAMESPACES
+        // ============================================
+        if (namespace === 'metric-cpu') {
+          res.write(`data: ${JSON.stringify({ phase: 'reflex', content: { value: '0', delta: 'initializing...' } })}\n\n`);
+          let prev = 45;
+          const interval = setInterval(() => {
+            const val = Math.max(5, Math.min(95, prev + (Math.random() - 0.5) * 20));
+            const delta = val - prev > 0 ? `+${(val - prev).toFixed(1)}%` : `${(val - prev).toFixed(1)}%`;
+            const phase = Math.random() > 0.8 ? 'complete' : 'deliberation';
+            res.write(`data: ${JSON.stringify({ phase, content: { value: val.toFixed(0), delta } })}\n\n`);
+            prev = val;
+          }, 2000);
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        if (namespace === 'metric-memory') {
+          res.write(`data: ${JSON.stringify({ phase: 'reflex', content: { value: '0', delta: 'initializing...' } })}\n\n`);
+          let prev = 3.2;
+          const interval = setInterval(() => {
+            const val = Math.max(1, Math.min(7.5, prev + (Math.random() - 0.5) * 0.5));
+            const delta = val - prev > 0 ? `+${((val - prev) * 1000).toFixed(0)}MB` : `${((val - prev) * 1000).toFixed(0)}MB`;
+            const phase = Math.random() > 0.8 ? 'complete' : 'deliberation';
+            res.write(`data: ${JSON.stringify({ phase, content: { value: val.toFixed(1), delta } })}\n\n`);
+            prev = val;
+          }, 2500);
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        if (namespace === 'metric-requests') {
+          res.write(`data: ${JSON.stringify({ phase: 'reflex', content: { value: '0', delta: 'initializing...' } })}\n\n`);
+          let prev = 12.5;
+          const interval = setInterval(() => {
+            const val = Math.max(1, prev + (Math.random() - 0.5) * 5);
+            const delta = val - prev > 0 ? `+${(val - prev).toFixed(1)}k` : `${(val - prev).toFixed(1)}k`;
+            const phase = Math.random() > 0.85 ? 'complete' : 'deliberation';
+            res.write(`data: ${JSON.stringify({ phase, content: { value: val.toFixed(1), delta } })}\n\n`);
+            prev = val;
+          }, 1500);
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        if (namespace === 'metric-latency') {
+          res.write(`data: ${JSON.stringify({ phase: 'reflex', content: { value: '0', delta: 'initializing...' } })}\n\n`);
+          let prev = 45;
+          const interval = setInterval(() => {
+            const val = Math.max(10, Math.min(200, prev + (Math.random() - 0.5) * 30));
+            const delta = val - prev > 0 ? `+${(val - prev).toFixed(0)}ms` : `${(val - prev).toFixed(0)}ms`;
+            const phase = val > 100 ? 'deliberation' : 'complete';
+            res.write(`data: ${JSON.stringify({ phase, content: { value: val.toFixed(0), delta } })}\n\n`);
+            prev = val;
+          }, 2200);
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        if (namespace === 'metric-errors') {
+          res.write(`data: ${JSON.stringify({ phase: 'reflex', content: { value: '0', delta: 'initializing...' } })}\n\n`);
+          let prev = 0.1;
+          const interval = setInterval(() => {
+            const val = Math.max(0, Math.min(5, prev + (Math.random() - 0.6) * 0.3));
+            const delta = val < 0.5 ? 'healthy' : val < 2 ? 'elevated' : 'critical';
+            const phase = val < 0.5 ? 'complete' : 'deliberation';
+            res.write(`data: ${JSON.stringify({ phase, content: { value: val.toFixed(2), delta } })}\n\n`);
+            prev = val;
+          }, 3000);
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        if (namespace === 'metric-uptime') {
+          res.write(`data: ${JSON.stringify({ phase: 'reflex', content: { value: '99.9', delta: 'calculating...' } })}\n\n`);
+          const interval = setInterval(() => {
+            const val = 99.9 + Math.random() * 0.09;
+            const phase = 'complete';
+            res.write(`data: ${JSON.stringify({ phase, content: { value: val.toFixed(2), delta: 'last 30 days' } })}\n\n`);
+          }, 5000);
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        // ============================================
+        // WS3: DASHBOARD NAMESPACES
+        // ============================================
+        if (namespace === 'sidebar-stats') {
+          res.write(`data: ${JSON.stringify({ phase: 'reflex', content: { users: '0', sessions: '0', revenue: '$0' } })}\n\n`);
+          const interval = setInterval(() => {
+            const users = 1200 + Math.floor(Math.random() * 300);
+            const sessions = 3400 + Math.floor(Math.random() * 500);
+            const revenue = 45000 + Math.floor(Math.random() * 5000);
+            res.write(`data: ${JSON.stringify({ phase: 'deliberation', content: { users: users.toLocaleString(), sessions: sessions.toLocaleString(), revenue: '$' + revenue.toLocaleString() } })}\n\n`);
+          }, 4000);
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        if (namespace === 'dashboard-overview') {
+          res.write(`data: ${JSON.stringify({ phase: 'reflex', content: { status: 'Connecting...', cpu: '--', memory: '--', requests: '--', latency: '--' } })}\n\n`);
+          let tick = 0;
+          const interval = setInterval(() => {
+            const cpu = (30 + Math.random() * 40).toFixed(0) + '%';
+            const memory = (2 + Math.random() * 2).toFixed(1) + 'GB';
+            const requests = (8 + Math.random() * 6).toFixed(1) + 'k';
+            const latency = (30 + Math.random() * 50).toFixed(0) + 'ms';
+            const phase = tick % 5 === 0 ? 'complete' : 'deliberation';
+            const status = phase === 'complete' ? 'Healthy' : 'Updating...';
+            res.write(`data: ${JSON.stringify({ phase, content: { status, cpu, memory, requests, latency } })}\n\n`);
+            tick++;
+          }, 2000);
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        if (namespace === 'dashboard-health') {
+          const statuses = ['OK', 'OK', 'OK', 'WARN', 'OK'];
+          res.write(`data: ${JSON.stringify({ phase: 'reflex', content: { 'health-status': 'Checking...', 'api-status': '--', 'db-status': '--', 'cache-status': '--', 'queue-status': '--' } })}\n\n`);
+          let tick = 0;
+          const interval = setInterval(() => {
+            const pick = () => statuses[Math.floor(Math.random() * statuses.length)];
+            const phase = tick % 4 === 0 ? 'complete' : 'deliberation';
+            res.write(`data: ${JSON.stringify({ phase, content: { 'health-status': phase === 'complete' ? 'All Systems Go' : 'Checking...', 'api-status': pick(), 'db-status': pick(), 'cache-status': pick(), 'queue-status': pick() } })}\n\n`);
+            tick++;
+          }, 3000);
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        if (namespace === 'dashboard-activity') {
+          const activities = [
+            'User john@example.com logged in',
+            'New order #12847 placed',
+            'Payment processed: $299.00',
+            'Report generated: Q1 Sales',
+            'Cache cleared successfully',
+            'Backup completed'
+          ];
+          res.write(`data: ${JSON.stringify({ phase: 'reflex', content: { 'activity-1': 'Loading...', 'activity-1-time': '--:--', 'activity-2': 'Loading...', 'activity-2-time': '--:--', 'activity-3': 'Loading...', 'activity-3-time': '--:--' } })}\n\n`);
+          let idx = 0;
+          const interval = setInterval(() => {
+            const time = new Date().toLocaleTimeString();
+            const a1 = activities[(idx) % activities.length];
+            const a2 = activities[(idx + 1) % activities.length];
+            const a3 = activities[(idx + 2) % activities.length];
+            const phase = idx % 3 === 0 ? 'complete' : 'deliberation';
+            res.write(`data: ${JSON.stringify({ phase, content: { 'activity-1': a1, 'activity-1-time': time, 'activity-2': a2, 'activity-2-time': time, 'activity-3': a3, 'activity-3-time': time } })}\n\n`);
+            idx++;
+          }, 3500);
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
         // EDS Demo namespace - for leapfrog demo
         if (namespace === 'eds-demo') {
           const updates = [
