@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Monitor | React Version</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="../shared.css">
+</head>
+<body>
+  <noscript>
+    <div class="noscript-error">
+      JavaScript required. React cannot render without JavaScript.
+    </div>
+  </noscript>
+
+  <div id="root">
+    <!-- React will render here -->
+    <!-- Without JavaScript, this is blank -->
+  </div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // ============================================
+    // REACT PATTERN: State + Effects + Render
+    // ============================================
+
+    // Service Card Component
+    function ServiceCard({ service }) {
+      const statusColors = {
+        healthy: '#22c55e',
+        degraded: '#f59e0b',
+        down: '#ef4444'
+      };
+
+      return (
+        <div className="service-card" style={{ '--status-color': statusColors[service.status] }}>
+          <div className="service-header">
+            <span className="service-name">{service.name}</span>
+            <span className="service-status" data-status={service.status}>
+              {service.status}
+            </span>
+          </div>
+          <div className="service-metrics">
+            <div className="metric">
+              <span className="metric-label">Latency</span>
+              <span className="metric-value">{service.latency}ms</span>
+            </div>
+            <div className="metric">
+              <span className="metric-label">Uptime</span>
+              <span className="metric-value">{service.uptime}%</span>
+            </div>
+            <div className="metric">
+              <span className="metric-label">Requests</span>
+              <span className="metric-value">{service.requests}/s</span>
+            </div>
+          </div>
+          <div className="service-footer">
+            Last check: {service.lastCheck}
+          </div>
+        </div>
+      );
+    }
+
+    // Main App Component
+    function App() {
+      const [services, setServices] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [lastUpdate, setLastUpdate] = useState(null);
+
+      // Data fetching via polling (typical React pattern)
+      useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const response = await fetch('/api/services');
+            const data = await response.json();
+            setServices(data.services);
+            setLastUpdate(new Date().toLocaleTimeString());
+            setLoading(false);
+          } catch (error) {
+            console.error('Failed to fetch services:', error);
+          }
+        };
+
+        fetchData();
+        const interval = setInterval(fetchData, 3000);
+        return () => clearInterval(interval);
+      }, []);
+
+      if (loading) {
+        return (
+          <div className="app">
+            <header className="app-header">
+              <h1>Service Monitor</h1>
+              <span className="version-badge">React 18</span>
+            </header>
+            <div className="loading">Loading services...</div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="app">
+          <header className="app-header">
+            <h1>Service Monitor</h1>
+            <span className="version-badge">React 18</span>
+          </header>
+
+          <div className="status-bar">
+            <span>Last updated: {lastUpdate}</span>
+            <span>{services.length} services monitored</span>
+          </div>
+
+          <div className="services-grid">
+            {services.map(service => (
+              <ServiceCard key={service.id} service={service} />
+            ))}
+          </div>
+
+          <footer className="app-footer">
+            <div className="tech-stack">
+              <strong>Stack:</strong> React 18 + useState + useEffect + fetch polling
+            </div>
+            <div className="execution-model">
+              <code>Server → JSON → React → VDOM → Reconcile → DOM</code>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+    // Mount React app
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

@@ -382,6 +382,51 @@ function mockSSEPlugin() {
           return;
         }
 
+        // ============================================
+        // WS2: REACT REPLACEMENT - SERVICE MONITOR
+        // ============================================
+        if (namespace === 'monitor-status') {
+          res.write(`data: ${JSON.stringify({ phase: 'reflex', content: { lastUpdate: new Date().toLocaleTimeString(), serviceCount: '6' } })}\n\n`);
+          const interval = setInterval(() => {
+            res.write(`data: ${JSON.stringify({ phase: 'complete', content: { lastUpdate: new Date().toLocaleTimeString(), serviceCount: '6' } })}\n\n`);
+          }, 3000);
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
+        // Service endpoints for Aether version
+        const serviceConfigs = {
+          'service-api': { name: 'API Gateway', baseLatency: 42, baseUptime: 99.9, baseRequests: 1247 },
+          'service-auth': { name: 'Auth Service', baseLatency: 38, baseUptime: 99.8, baseRequests: 892 },
+          'service-db': { name: 'Database', baseLatency: 125, baseUptime: 98.5, baseRequests: 3421 },
+          'service-cache': { name: 'Cache Layer', baseLatency: 8, baseUptime: 99.99, baseRequests: 8742 },
+          'service-queue': { name: 'Message Queue', baseLatency: 15, baseUptime: 99.95, baseRequests: 2156 },
+          'service-cdn': { name: 'CDN', baseLatency: 22, baseUptime: 99.99, baseRequests: 15234 }
+        };
+
+        if (serviceConfigs[namespace]) {
+          const cfg = serviceConfigs[namespace];
+          const getStatus = (latency, uptime) => {
+            if (uptime < 99 || latency > 100) return 'degraded';
+            if (uptime < 95 || latency > 200) return 'down';
+            return 'healthy';
+          };
+
+          res.write(`data: ${JSON.stringify({ phase: 'reflex', content: { name: cfg.name, status: 'healthy', latency: cfg.baseLatency.toString(), uptime: cfg.baseUptime.toFixed(1), requests: cfg.baseRequests.toString(), lastCheck: new Date().toLocaleTimeString() } })}\n\n`);
+
+          const interval = setInterval(() => {
+            const latency = Math.max(5, cfg.baseLatency + Math.floor((Math.random() - 0.5) * 30));
+            const uptime = Math.max(95, Math.min(99.99, cfg.baseUptime + (Math.random() - 0.5) * 2));
+            const requests = Math.max(100, cfg.baseRequests + Math.floor((Math.random() - 0.5) * 200));
+            const status = getStatus(latency, uptime);
+            const phase = status === 'healthy' ? 'complete' : 'deliberation';
+            res.write(`data: ${JSON.stringify({ phase, content: { name: cfg.name, status, latency: latency.toString(), uptime: uptime.toFixed(1), requests: requests.toString(), lastCheck: new Date().toLocaleTimeString() } })}\n\n`);
+          }, 2000 + Math.random() * 1000);
+
+          req.on('close', () => clearInterval(interval));
+          return;
+        }
+
         // EDS Demo namespace - for leapfrog demo
         if (namespace === 'eds-demo') {
           const updates = [
@@ -461,6 +506,22 @@ function mockSSEPlugin() {
       server.middlewares.use('/check', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ eligible: true, config: {} }));
+      });
+
+      // ============================================
+      // WS2: REST API for React version polling
+      // ============================================
+      server.middlewares.use('/api/services', (req, res) => {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        const services = [
+          { id: 1, name: 'API Gateway', status: Math.random() > 0.1 ? 'healthy' : 'degraded', latency: Math.floor(30 + Math.random() * 30), uptime: (99.5 + Math.random() * 0.4).toFixed(1), requests: Math.floor(1000 + Math.random() * 500), lastCheck: new Date().toLocaleTimeString() },
+          { id: 2, name: 'Auth Service', status: Math.random() > 0.1 ? 'healthy' : 'degraded', latency: Math.floor(25 + Math.random() * 25), uptime: (99.3 + Math.random() * 0.6).toFixed(1), requests: Math.floor(700 + Math.random() * 400), lastCheck: new Date().toLocaleTimeString() },
+          { id: 3, name: 'Database', status: Math.random() > 0.3 ? 'healthy' : 'degraded', latency: Math.floor(100 + Math.random() * 80), uptime: (97.5 + Math.random() * 2).toFixed(1), requests: Math.floor(3000 + Math.random() * 800), lastCheck: new Date().toLocaleTimeString() },
+          { id: 4, name: 'Cache Layer', status: 'healthy', latency: Math.floor(5 + Math.random() * 10), uptime: (99.9 + Math.random() * 0.09).toFixed(2), requests: Math.floor(8000 + Math.random() * 2000), lastCheck: new Date().toLocaleTimeString() },
+          { id: 5, name: 'Message Queue', status: Math.random() > 0.05 ? 'healthy' : 'degraded', latency: Math.floor(10 + Math.random() * 15), uptime: (99.8 + Math.random() * 0.15).toFixed(2), requests: Math.floor(2000 + Math.random() * 500), lastCheck: new Date().toLocaleTimeString() },
+          { id: 6, name: 'CDN', status: 'healthy', latency: Math.floor(15 + Math.random() * 20), uptime: (99.95 + Math.random() * 0.04).toFixed(2), requests: Math.floor(14000 + Math.random() * 3000), lastCheck: new Date().toLocaleTimeString() }
+        ];
+        res.end(JSON.stringify({ services }));
       });
 
       // /api/check endpoint for net-new mode

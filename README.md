@@ -187,10 +187,22 @@ Every demo includes `<noscript>` notices proving this.
 
 | Example | Path | Description |
 |---------|------|-------------|
+| **React Replacement** | `/examples/react-replacement/` | **Proves: A real React app does not need React** |
 | **EDS Leapfrog** | `/examples/eds-leapfrog/` | React vs Aether side-by-side |
 | **Alerts** | `/examples/ui/alert.html` | Status notifications |
 | **Metrics** | `/examples/ui/metrics.html` | Live telemetry dashboard |
 | **Dashboard** | `/examples/ui/dashboard.html` | Multi-slot composition |
+
+### React Replacement Demo
+
+The `/examples/react-replacement/` demo shows a typical React app pattern (Service Monitor) and its Aether equivalent:
+
+```
+React Version:   useState + useEffect + fetch → JSON → setState → render
+Aether Version:  SSE → Kernel → DOM
+```
+
+Same UI. Same data. No React required.
 
 ---
 

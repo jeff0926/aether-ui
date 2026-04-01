@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Monitor | Aether Version</title>
+  <script src="../../../dist/aether-kernel.min.js"></script>
+  <link rel="stylesheet" href="../shared.css">
+</head>
+<body>
+  <noscript>
+    <div class="noscript-notice">
+      JavaScript disabled. Static content visible below. Live SSE updates unavailable.
+    </div>
+  </noscript>
+
+  <div class="app">
+    <header class="app-header">
+      <h1>Service Monitor</h1>
+      <span class="version-badge aether">Aether</span>
+    </header>
+
+    <!-- Status bar receives updates via SSE -->
+    <aether-runtime endpoint="/api/sse" namespace="monitor-status">
+      <div class="status-bar">
+        <span>Last updated: <span data-aether-slot="lastUpdate">--:--:--</span></span>
+        <span><span data-aether-slot="serviceCount">0</span> services monitored</span>
+      </div>
+    </aether-runtime>
+
+    <div class="services-grid">
+      <!-- Service 1: API Gateway -->
+      <aether-runtime endpoint="/api/sse" namespace="service-api">
+        <div class="service-card" style="--status-color: var(--success);">
+          <div class="service-header">
+            <span class="service-name" data-aether-slot="name">API Gateway</span>
+            <span class="service-status" data-aether-slot="status" data-status="healthy">healthy</span>
+          </div>
+          <div class="service-metrics">
+            <div class="metric">
+              <span class="metric-label">Latency</span>
+              <span class="metric-value"><span data-aether-slot="latency">--</span>ms</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Uptime</span>
+              <span class="metric-value"><span data-aether-slot="uptime">--</span>%</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Requests</span>
+              <span class="metric-value"><span data-aether-slot="requests">--</span>/s</span>
+            </div>
+          </div>
+          <div class="service-footer">
+            Last check: <span data-aether-slot="lastCheck">--:--:--</span>
+          </div>
+        </div>
+      </aether-runtime>
+
+      <!-- Service 2: Auth Service -->
+      <aether-runtime endpoint="/api/sse" namespace="service-auth">
+        <div class="service-card" style="--status-color: var(--success);">
+          <div class="service-header">
+            <span class="service-name" data-aether-slot="name">Auth Service</span>
+            <span class="service-status" data-aether-slot="status" data-status="healthy">healthy</span>
+          </div>
+          <div class="service-metrics">
+            <div class="metric">
+              <span class="metric-label">Latency</span>
+              <span class="metric-value"><span data-aether-slot="latency">--</span>ms</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Uptime</span>
+              <span class="metric-value"><span data-aether-slot="uptime">--</span>%</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Requests</span>
+              <span class="metric-value"><span data-aether-slot="requests">--</span>/s</span>
+            </div>
+          </div>
+          <div class="service-footer">
+            Last check: <span data-aether-slot="lastCheck">--:--:--</span>
+          </div>
+        </div>
+      </aether-runtime>
+
+      <!-- Service 3: Database -->
+      <aether-runtime endpoint="/api/sse" namespace="service-db">
+        <div class="service-card" style="--status-color: var(--warning);">
+          <div class="service-header">
+            <span class="service-name" data-aether-slot="name">Database</span>
+            <span class="service-status" data-aether-slot="status" data-status="degraded">degraded</span>
+          </div>
+          <div class="service-metrics">
+            <div class="metric">
+              <span class="metric-label">Latency</span>
+              <span class="metric-value"><span data-aether-slot="latency">--</span>ms</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Uptime</span>
+              <span class="metric-value"><span data-aether-slot="uptime">--</span>%</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Requests</span>
+              <span class="metric-value"><span data-aether-slot="requests">--</span>/s</span>
+            </div>
+          </div>
+          <div class="service-footer">
+            Last check: <span data-aether-slot="lastCheck">--:--:--</span>
+          </div>
+        </div>
+      </aether-runtime>
+
+      <!-- Service 4: Cache -->
+      <aether-runtime endpoint="/api/sse" namespace="service-cache">
+        <div class="service-card" style="--status-color: var(--success);">
+          <div class="service-header">
+            <span class="service-name" data-aether-slot="name">Cache Layer</span>
+            <span class="service-status" data-aether-slot="status" data-status="healthy">healthy</span>
+          </div>
+          <div class="service-metrics">
+            <div class="metric">
+              <span class="metric-label">Latency</span>
+              <span class="metric-value"><span data-aether-slot="latency">--</span>ms</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Uptime</span>
+              <span class="metric-value"><span data-aether-slot="uptime">--</span>%</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Requests</span>
+              <span class="metric-value"><span data-aether-slot="requests">--</span>/s</span>
+            </div>
+          </div>
+          <div class="service-footer">
+            Last check: <span data-aether-slot="lastCheck">--:--:--</span>
+          </div>
+        </div>
+      </aether-runtime>
+
+      <!-- Service 5: Queue -->
+      <aether-runtime endpoint="/api/sse" namespace="service-queue">
+        <div class="service-card" style="--status-color: var(--success);">
+          <div class="service-header">
+            <span class="service-name" data-aether-slot="name">Message Queue</span>
+            <span class="service-status" data-aether-slot="status" data-status="healthy">healthy</span>
+          </div>
+          <div class="service-metrics">
+            <div class="metric">
+              <span class="metric-label">Latency</span>
+              <span class="metric-value"><span data-aether-slot="latency">--</span>ms</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Uptime</span>
+              <span class="metric-value"><span data-aether-slot="uptime">--</span>%</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Requests</span>
+              <span class="metric-value"><span data-aether-slot="requests">--</span>/s</span>
+            </div>
+          </div>
+          <div class="service-footer">
+            Last check: <span data-aether-slot="lastCheck">--:--:--</span>
+          </div>
+        </div>
+      </aether-runtime>
+
+      <!-- Service 6: CDN -->
+      <aether-runtime endpoint="/api/sse" namespace="service-cdn">
+        <div class="service-card" style="--status-color: var(--success);">
+          <div class="service-header">
+            <span class="service-name" data-aether-slot="name">CDN</span>
+            <span class="service-status" data-aether-slot="status" data-status="healthy">healthy</span>
+          </div>
+          <div class="service-metrics">
+            <div class="metric">
+              <span class="metric-label">Latency</span>
+              <span class="metric-value"><span data-aether-slot="latency">--</span>ms</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Uptime</span>
+              <span class="metric-value"><span data-aether-slot="uptime">--</span>%</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Requests</span>
+              <span class="metric-value"><span data-aether-slot="requests">--</span>/s</span>
+            </div>
+          </div>
+          <div class="service-footer">
+            Last check: <span data-aether-slot="lastCheck">--:--:--</span>
+          </div>
+        </div>
+      </aether-runtime>
+    </div>
+
+    <footer class="app-footer">
+      <div class="tech-stack">
+        <strong>Stack:</strong> Aether UI (868B kernel) + SSE projection
+      </div>
+      <div class="execution-model">
+        <code>Server → SSE → Kernel → DOM</code>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="../../../src/adapter/web-component.js"></script>
+</body>
+</html>
